@@ -4,13 +4,14 @@ import random
 import world
 import speaker
 import distributional_semantics
-from utils import read_dataset, cosine_similarity
+from utils import read_dataset, cosine_similarity, printer
 
 '''Start of simulation. Create a world.'''
 a_world = world.World([])
 
 '''Record probability data to generate the world'''
 animals, vocabulary = read_dataset("animal-dataset.txt")
+print "The vocabulary has",len(vocabulary.words),"entries."
 
 '''Produce all instances in this world. 1000 of them.'''
 entities = []
@@ -18,7 +19,7 @@ for n in range(1000):
   x = world.sample_animal("x"+str(n),animals)
   entities.append(x)
 
-'''Produce all situations for this world. 10000 of them.'''
+'''Produce all situations for this world. 10 of them.'''
 situations = []
 for n in range(10):
   s = world.sample_situation("S"+str(n), entities)
@@ -39,14 +40,16 @@ S1 = speaker.Speaker("S1",vocabulary)
 S2 = speaker.Speaker("S2",vocabulary)
 S3 = speaker.Speaker("S3",vocabulary)
 
-'''Situations S1 was exposed to. 500 of them.'''
-for n in range(500):
+'''Situations S1 was exposed to. 5 of them.'''
+for n in range(5):
   S1.experience(random.choice(a_world.situations))
 
+experiences = []
 for w,v in S1.distributions.items():
   for context in v:
     for lf in context.dlfs:
-      print w,context.args,lf, context.situation
+      experiences.append(w+' '+str(context.args)+' '+lf+' '+context.situation)
+printer("S1.experiences.txt", experiences)
 
 S1.mk_standard_vectors()
 

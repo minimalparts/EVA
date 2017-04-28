@@ -31,7 +31,8 @@ class Speaker(object):
 
     '''This simply creates standard vectors for each word in the speaker's distributions.'''
     def mk_standard_vectors(self):
-        for feature in [ f for word,contexts in self.distributions.items() for c in contexts for f in c.dlfs]:
+        for word, contexts in self.distributions.items():
+          for feature in (feature for c in contexts for feature in c.dlfs):
             self.vector_space.vectors[word][self.vector_space.words_to_id[feature]]+=1
         out = []
         for k,v in self.vector_space.vectors.items():
