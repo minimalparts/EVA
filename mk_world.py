@@ -6,6 +6,9 @@ import speaker
 import distributional_semantics
 from utils import read_dataset, cosine_similarity, printer
 
+
+np.random.seed(1)
+
 '''Start of simulation. Create a world.'''
 a_world = world.World([])
 
@@ -45,10 +48,10 @@ for n in range(5):
   S1.experience(random.choice(a_world.situations))
 
 experiences = []
-for w,v in S1.distributions.items():
-  for context in v:
+for name,se in S1.sparse_entities.items():
+  for context in se.contexts:
     for lf in context.dlfs:
-      experiences.append(w+' '+str(context.args)+' '+lf+' '+context.situation)
+      experiences.append(se.word+' '+str(context.args)+' '+lf+' '+context.situation)
 printer("S1.experiences.txt", experiences)
 
 S1.mk_standard_vectors()
@@ -58,9 +61,8 @@ S1.mk_standard_vectors()
   
 
 '''Say stuff about the world'''
-#for s in S1.situations:
-#  print s.entities
-#  tell(s)
+for s in S1.situations:
+  S1.tell(s)
   
 
 
