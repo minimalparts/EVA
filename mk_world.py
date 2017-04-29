@@ -1,3 +1,4 @@
+import os
 import sys
 import numpy as np
 import random
@@ -6,8 +7,10 @@ import speaker
 import distributional_semantics
 from utils import read_dataset, cosine_similarity, printer
 
-
-np.random.seed(1)
+world_files = ["S1.knowledge.txt", "S2.knowledge.txt", "S1.vectors.txt", "S2.vectors.txt", "world.txt"]
+for f in world_files:
+  if os.path.isfile(f):
+    os.remove(f)
 
 '''Start of simulation. Create a world.'''
 a_world = world.World([])
@@ -44,25 +47,16 @@ S2 = speaker.Speaker("S2",vocabulary)
 S3 = speaker.Speaker("S3",vocabulary)
 
 '''Situations S1 was exposed to. 5 of them.'''
-for n in range(5):
-  S1.experience(random.choice(a_world.situations))
-
-experiences = []
-for name,se in S1.sparse_entities.items():
-  for context in se.contexts:
-    for lf in context.dlfs:
-      experiences.append(se.word+' '+str(context.args)+' '+lf+' '+context.situation)
-printer("S1.experiences.txt", experiences)
-
-S1.mk_standard_vectors()
-
-
-  
-  
+experiences = random.sample(a_world.situations,5)
+for e in experiences:
+  print "S1 experiences",e.ID
+  S1.experience(e)
 
 '''Say stuff about the world'''
+s1_utterances = []
 for s in S1.situations:
-  S1.tell(s)
-  
-
-
+  s1_utterances = S1.tell(s)
+  S2.hear(s1_utterances)
+        
+S1.mk_standard_vectors()
+S2.mk_standard_vectors()

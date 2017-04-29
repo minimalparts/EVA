@@ -11,7 +11,7 @@ def cosine_similarity(v1, v2):
     return num / (sqrt(den_a) * sqrt(den_b))
 
 def printer(filename,lines):
-  f = open(filename,'w')
+  f = open(filename,'a')
   for l in lines:
     f.write(l+'\n')
   f.close()

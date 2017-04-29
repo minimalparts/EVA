@@ -41,6 +41,8 @@ def sample_animal(name,animals):
 
 def sample_situation(ID, animal_instances):
   s = Situation(ID, []) 
-  for n in range(random.randint(1,10)):
-    s.entities.append(random.choice(animal_instances))
+  n = random.randint(1,10)
+  sampled_animals = random.sample(animal_instances, n)
+  for animal in sampled_animals:
+    s.entities.append(animal)
   return s
