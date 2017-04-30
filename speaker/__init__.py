@@ -33,7 +33,7 @@ class Speaker(object):
                 #print "Creating new entity",linguistic_entity
                 se = distributional_semantics.SparseEntity(entity.species,linguistic_entity)
                 #In this simple implementation, we know that cardinality of instances is 1
-                se.cardinality = 1        
+                se.cardinality = 1 
                 self.sparse_entities[linguistic_entity] = se
             se = self.sparse_entities[linguistic_entity]
             #if not any(context.situation == situation.ID for context in se.contexts):
