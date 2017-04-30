@@ -4,7 +4,8 @@ class Vocabulary(object):
 
     def __init__(self):
         self.words = []
-        self.words_to_id = {}
+        self.contexts_to_id = {}
+        self.id_to_contexts = {}
 
 class SparseEntity(object):
     '''An entity with its contexts, which in principle could be a set of any cardinality.'''
@@ -26,6 +27,14 @@ class Space(object):
 
     def __init__(self, vocab):
         self.vectors={}
-        self.words_to_id = vocab.words_to_id
-        for w in vocab.words:
-            self.vectors[w] = np.zeros(len(vocab.words))
+        self.contexts_to_id = vocab.contexts_to_id
+        self.id_to_contexts = vocab.id_to_contexts
+        for word_id in self.id_to_contexts:
+            self.vectors[word_id] = np.zeros(len(vocab.words))
+
+def linalg(mat_heard,mat_known):
+
+    #mat_heard = np.vstack((mat_heard,np.ones(mat_heard.shape[0])))
+    w = np.linalg.lstsq(mat_heard,mat_known)[0] # obtaining the parameters
+    return w
+
