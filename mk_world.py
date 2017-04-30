@@ -49,10 +49,15 @@ S3 = speaker.Speaker("S3",vocabulary)
 '''Situations S1 was exposed to. 5 of them.'''
 experiences = random.sample(a_world.situations,5)
 for e in experiences:
-  print "S1 experiences",e.ID
+  #print "S1 experiences",e.ID
   S1.experience(e)
 
-'''Say stuff about the world'''
+'''Situations S2 was exposed to. 5 of them.'''
+experiences = random.sample(a_world.situations,5)
+for e in experiences:
+  S2.experience(e)
+
+'''S1 says stuff about the world. S2 listens.'''
 s1_utterances = []
 for s in S1.situations:
   s1_utterances = S1.tell(s)

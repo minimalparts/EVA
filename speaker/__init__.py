@@ -31,8 +31,9 @@ class Speaker(object):
             linguistic_entity = entity.name+'e' if experienced else entity.name+'h'
             if linguistic_entity not in self.sparse_entities:
                 #print "Creating new entity",linguistic_entity
-	        se = distributional_semantics.SparseEntity(entity.species,linguistic_entity)
-	        se.cardinality = 1				#In this simple implementation, we know that cardinality of instances is 1
+                se = distributional_semantics.SparseEntity(entity.species,linguistic_entity)
+                #In this simple implementation, we know that cardinality of instances is 1
+	        se.cardinality = 1        
                 self.sparse_entities[linguistic_entity] = se
             se = self.sparse_entities[linguistic_entity]
             #if not any(context.situation == situation.ID for context in se.contexts):
@@ -65,7 +66,7 @@ class Speaker(object):
 
     '''Tell *some* stuff about the situation (in logical forms)'''
     def tell(self,situation):
-        print self.name,"says..."
+        print "\n",self.name,"tells things about situation",situation.ID,"..."
         es = []
         fs = []
         utterances = []
