@@ -1,4 +1,4 @@
-import os
+import os, shutil
 import sys
 import numpy as np
 import random
@@ -9,10 +9,20 @@ from utils import read_dataset, cosine_similarity, printer, mk_ideal_matrix, mk_
 
 np.set_printoptions(suppress=True)
 
-world_files = ["S1.knowledge.txt", "S2.knowledge.txt", "S1.h.vectors.txt", "S1.k.vectors.txt", "S2.h.vectors.txt", "S2.k.vectors.txt", "world.txt"]
-for f in world_files:
-  if os.path.isfile(f):
-    os.remove(f)
+'''Create data directory if it does not exist.'''
+if not os.path.exists("./data"):
+    os.makedirs("./data")
+
+
+'''Remove content of data/ directory.'''
+folder = './data/'
+for f in os.listdir(folder):
+    file_path = os.path.join(folder, f)
+    try:
+        if os.path.isfile(file_path):
+            os.unlink(file_path)
+    except Exception as e:
+        print(e)
 
 '''Start of simulation. Create a world.'''
 a_world = world.World([])
@@ -34,7 +44,7 @@ for n in range(1000):
   a_world.situations.append(s)
 
 '''Record world'''
-world_file=open("world.txt",'w')
+world_file=open("./data/world.txt",'w')
 for s in a_world.situations:
   for e in s.entities:
     for f in e.features:
