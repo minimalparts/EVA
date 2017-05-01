@@ -48,14 +48,14 @@ S1 = speaker.Speaker("S1",vocabulary)
 S2 = speaker.Speaker("S2",vocabulary)
 S3 = speaker.Speaker("S3",vocabulary)
 
-'''Situations S1 was exposed to. 5 of them.'''
-experiences = random.sample(a_world.situations,500)
+'''Situations S1 was exposed to. 100 of them.'''
+experiences = random.sample(a_world.situations,100)
 for e in experiences:
   #print "S1 experiences",e.ID
   S1.experience(e)
 
-'''Situations S2 was exposed to. 5 of them.'''
-experiences = random.sample(a_world.situations,200)
+'''Situations S2 was exposed to. 500 of them.'''
+experiences = random.sample(a_world.situations,100)
 for e in experiences:
   S2.experience(e)
 
@@ -69,6 +69,9 @@ S1.mk_vectors(True)
 S2.mk_vectors(True)
 S2.mk_vectors(False)
 
+'''Performing linear regression on the info that S2
+has heard about (their distributional space) vs what 
+they know (their ideal space).'''
 s2_ideal_space, vocab = mk_ideal_matrix(S2.ideal_vector_space, S2.distributional_vector_space, len(vocabulary.words), True)
 s2_dist_space = mk_dist_matrix(S2.distributional_vector_space, len(vocabulary.words), vocab)
 ones = np.ones((1,s2_dist_space.shape[0]))
@@ -81,19 +84,23 @@ rest_dist_space = np.hstack((rest_dist_space,ones.T))
 test = normalise(np.dot(rest_dist_space,w))
 
 #Sanity check. Do we recover the original values of the ideal space?
-print vocabulary.id_to_contexts
+#print vocabulary.id_to_contexts
+print "\n\nChecking we are roughly recovering original 'ideal' values \
+after linear regression... (Only printing 'high values'.)"
 s2_ideal_space, all_vocab = mk_ideal_matrix(S2.ideal_vector_space, S2.distributional_vector_space, len(vocabulary.words), False)
 for i in range(len(rest_dist_space)):
   word = vocabulary.contexts_to_id[vocabulary.words[i]]
   if word in vocab:
-    print vocabulary.id_to_contexts[word], cosine_similarity(s2_ideal_space[i],normalise(test[i]))
+    print "\n",vocabulary.id_to_contexts[word], cosine_similarity(s2_ideal_space[i],normalise(test[i]))
     for j in range(len(test[i])):
       if s2_ideal_space[i][j] > 0.05:
         print vocabulary.id_to_contexts[j], s2_ideal_space[i][j], test[i][j]
     
 #Now output all values
+print "\n\nNow let's check what S2 has inferred from the learnt regression. \
+Also for concepts they did not know before."
 for i in range(len(S2.distributional_vector_space.vectors)):
-  print i,vocabulary.words[i]
+  print "\n",i,vocabulary.words[i]
   for j in range(len(test[i])):
     if test[i][j] > 0.05:
       print vocabulary.id_to_contexts[j], test[i][j]
