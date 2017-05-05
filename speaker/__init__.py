@@ -17,6 +17,8 @@ class Speaker(object):
         self.ideal_vector_space = distributional_semantics.Space(vocab)
 
     def experience(self, situation):
+        '''Experiencing a situation means appending it to the stored situations
+        and updating the entity store.'''
         self.situations.append(situation)
         self.update_sparse_entities(situation,True)
 
@@ -43,7 +45,7 @@ class Speaker(object):
             for context in se.contexts:
                 for lf in context.dlfs:
                     knowledge.append(se.word+' '+str(context.args)+' '+lf+' '+context.situation)
-            utils.printer(self.name+".knowledge.txt", knowledge)
+            utils.printer("./data/"+self.name+".knowledge.txt", knowledge)
                 
 
     def mk_vectors(self, know):
@@ -67,28 +69,30 @@ class Speaker(object):
         out = []
         for k,v in vector_space.vectors.items():
           out.append(vector_space.id_to_contexts[k]+" "+' '.join([str(n) for n in v]))
-        utils.printer(self.name+"."+vector_type+".vectors.txt",out)
+        utils.printer("./data/"+self.name+"."+vector_type+".vectors.txt",out)
         
 
 
     def tell(self,situation):
         '''Tell *some* stuff about the situation (in logical forms)'''
 
-        print "\n",self.name,"tells things about situation",situation.ID,"..."
+        #print "\n",self.name,"tells things about situation",situation.ID,"..."
         es = []
         fs = []
         utterances = []
         num_es = random.randint(1,len(situation.entities))
         es = random.sample(situation.entities,num_es)
+        #es = situation.entities
     
         for e in es:
            #Only report on a maximum of 3 features
            num_fs = random.randint(1,3)
            fs = random.sample(e.features, num_fs)
            for f in fs:
+           #for f in e.features:
                #print e.name, e.species, f
                u = "<[a("+e.name+"), "+e.species+"("+e.name+"), "+f+"("+e.name+")]"+situation.ID+">"
-               print u
+               #print u
                utterances.append(u)
         return utterances
 
@@ -120,7 +124,6 @@ class Speaker(object):
             for e in s.entities:
               if e.name == name:
                 e.features.append(feature)
+                #print "Heard:",e.name,feature
         self.update_sparse_entities(s,False)
        
-    def get_things_heard(self,space):    
-        '''Get vectors from things heard by the speaker, to learn correspondence with things *known*.'''

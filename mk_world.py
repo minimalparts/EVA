@@ -56,18 +56,17 @@ world_file.close()
 '''Now create speakers'''
 S1 = speaker.Speaker("S1",vocabulary)
 S2 = speaker.Speaker("S2",vocabulary)
-S3 = speaker.Speaker("S3",vocabulary)
 
 '''Situations S1 was exposed to. 100 of them.'''
-experiences = random.sample(a_world.situations,100)
-for e in experiences:
+s1_situations = random.sample(a_world.situations,500)
+for s in s1_situations:
   #print "S1 experiences",e.ID
-  S1.experience(e)
+  S1.experience(s)
 
 '''Situations S2 was exposed to. 500 of them.'''
-experiences = random.sample(a_world.situations,100)
-for e in experiences:
-  S2.experience(e)
+s2_situations = random.sample(a_world.situations,500)
+for s in s2_situations:
+  S2.experience(s)
 
 '''S1 says stuff about the world. S2 listens.'''
 s1_utterances = []
@@ -82,29 +81,32 @@ S2.mk_vectors(False)
 '''Performing linear regression on the info that S2
 has heard about (their distributional space) vs what 
 they know (their ideal space).'''
-s2_ideal_space, vocab = mk_ideal_matrix(S2.ideal_vector_space, S2.distributional_vector_space, len(vocabulary.words), True)
-s2_dist_space = mk_dist_matrix(S2.distributional_vector_space, len(vocabulary.words), vocab)
+s2_ideal_space, tmp_vocab = mk_ideal_matrix(S2.ideal_vector_space, S2.distributional_vector_space, len(vocabulary.words), True)
+s2_dist_space = mk_dist_matrix(S2.distributional_vector_space, len(vocabulary.words), tmp_vocab)
 ones = np.ones((1,s2_dist_space.shape[0]))
 s2_dist_space = np.hstack((s2_dist_space,ones.T))
 w = distributional_semantics.linalg(s2_dist_space, s2_ideal_space)
 
-rest_dist_space = mk_dist_matrix(S2.distributional_vector_space, len(vocabulary.words), vocabulary.words)
-ones = np.ones((1,rest_dist_space.shape[0]))
-rest_dist_space = np.hstack((rest_dist_space,ones.T))
-test = normalise(np.dot(rest_dist_space,w))
+tmp_vocab = []
+for word in vocabulary.words:
+  tmp_vocab.append(vocabulary.contexts_to_id[word])
+entire_dist_space = mk_dist_matrix(S2.distributional_vector_space, len(vocabulary.words), tmp_vocab)
+ones = np.ones((1,entire_dist_space.shape[0]))
+entire_dist_space = np.hstack((entire_dist_space,ones.T))
+test = normalise(np.dot(entire_dist_space,w))
 
 #Sanity check. Do we recover the original values of the ideal space?
 #print vocabulary.id_to_contexts
-print "\n\nChecking we are roughly recovering original 'ideal' values \
-after linear regression... (Only printing 'high values'.)"
-s2_ideal_space, all_vocab = mk_ideal_matrix(S2.ideal_vector_space, S2.distributional_vector_space, len(vocabulary.words), False)
-for i in range(len(rest_dist_space)):
-  word = vocabulary.contexts_to_id[vocabulary.words[i]]
-  if word in vocab:
-    print "\n",vocabulary.id_to_contexts[word], cosine_similarity(s2_ideal_space[i],normalise(test[i]))
-    for j in range(len(test[i])):
-      if s2_ideal_space[i][j] > 0.05:
-        print vocabulary.id_to_contexts[j], s2_ideal_space[i][j], test[i][j]
+#print "\n\nChecking we are roughly recovering original 'ideal' values \
+#after linear regression... (Only printing 'high values'.)"
+#s2_ideal_space, all_vocab = mk_ideal_matrix(S2.ideal_vector_space, S2.distributional_vector_space, len(vocabulary.words), False)
+#for i in range(len(rest_dist_space)):
+#  word = vocabulary.contexts_to_id[vocabulary.words[i]]
+#  if word in tmp_vocab:
+#    print "\n",vocabulary.id_to_contexts[word], cosine_similarity(s2_ideal_space[i],normalise(test[i]))
+#    for j in range(len(test[i])):
+#      if s2_ideal_space[i][j] > 0.05:
+#        print vocabulary.id_to_contexts[j], s2_ideal_space[i][j], test[i][j]
     
 #Now output all values
 print "\n\nNow let's check what S2 has inferred from the learnt regression. \
