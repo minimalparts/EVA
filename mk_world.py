@@ -93,7 +93,7 @@ for word in vocabulary.words:
 entire_dist_space = mk_dist_matrix(S2.distributional_vector_space, len(vocabulary.words), tmp_vocab)
 ones = np.ones((1,entire_dist_space.shape[0]))
 entire_dist_space = np.hstack((entire_dist_space,ones.T))
-test = normalise(np.dot(entire_dist_space,w))
+inferences = normalise(np.dot(entire_dist_space,w))
 
 #Sanity check. Do we recover the original values of the ideal space?
 #print vocabulary.id_to_contexts
@@ -113,6 +113,6 @@ print "\n\nNow let's check what S2 has inferred from the learnt regression. \
 Also for concepts they did not know before."
 for i in range(len(S2.distributional_vector_space.vectors)):
   print "\n",i,vocabulary.words[i]
-  for j in range(len(test[i])):
-    if test[i][j] > 0.05:
-      print vocabulary.id_to_contexts[j], test[i][j]
+  for j in range(len(inferences[i])):
+    if inferences[i][j] > 0.05:
+      print vocabulary.id_to_contexts[j], inferences[i][j]

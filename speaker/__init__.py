@@ -33,7 +33,7 @@ class Speaker(object):
             linguistic_entity = entity.name+'k' if experienced else entity.name+'h'
             if linguistic_entity not in self.sparse_entities:
                 se = distributional_semantics.SparseEntity(entity.species,linguistic_entity)
-                #In this simple implementation, we know that cardinality of instances is 1
+                #In this simple implementation, we know that cardinality of entities is 1
                 se.cardinality = 1
                 self.sparse_entities[linguistic_entity] = se
             se = self.sparse_entities[linguistic_entity]
@@ -41,11 +41,11 @@ class Speaker(object):
                 context = distributional_semantics.Context(se.name,situation.ID)
                 context.dlfs.append(feature)
                 se.contexts.append(context)
-            knowledge = []
+            context_set = []
             for context in se.contexts:
                 for lf in context.dlfs:
-                    knowledge.append(se.word+' '+str(context.args)+' '+lf+' '+context.situation)
-            utils.printer("./data/"+self.name+".knowledge.txt", knowledge)
+                    context_set.append(se.word+' '+str(context.args)+' '+lf+' '+context.situation)
+            utils.printer("./data/"+self.name+".context_set.txt", context_set)
                 
 
     def mk_vectors(self, know):
@@ -119,7 +119,7 @@ class Speaker(object):
         for u in utterances:
             word, name, feature, situation = self.parse_utterance(u)
             if not any(e.name == name for e in s.entities):
-              x = world.Instance(name,word,[])
+              x = world.Entity(name,word,[])
               s.entities.append(x)
             for e in s.entities:
               if e.name == name:

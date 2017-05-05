@@ -1,7 +1,7 @@
 import random
 import numpy as np
 
-class Instance(object):
+class Entity(object):
 
     def __init__(self, name, species, features):
         self.name = name
@@ -28,7 +28,7 @@ def check_incompatibilities(animal,feature):
 
 def sample_animal(name,animals):
   animal = random.choice(animals.keys())
-  x = Instance(name,animal,[])
+  x = Entity(name,animal,[])
   
   for k,v in animals[animal].items():
      has_feature = np.random.binomial(1,v)
@@ -39,10 +39,10 @@ def sample_animal(name,animals):
   return x
 
 
-def sample_situation(ID, animal_instances):
+def sample_situation(ID, animal_entities):
   s = Situation(ID, []) 
   n = random.randint(1,10)
-  sampled_animals = random.sample(animal_instances, n)
+  sampled_animals = random.sample(animal_entities, n)
   for animal in sampled_animals:
     s.entities.append(animal)
   return s
