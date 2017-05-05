@@ -45,7 +45,7 @@ class Speaker(object):
             for context in se.contexts:
                 for lf in context.dlfs:
                     context_set.append(se.word+' '+str(context.args)+' '+lf+' '+context.situation)
-            utils.printer("./data/"+self.name+".context_set.txt", context_set)
+            utils.printer("./data/"+self.name+".context_sets.txt", context_set)
                 
 
     def mk_vectors(self, know):
