@@ -22,7 +22,6 @@ The program will:
 *    make speaker S2 listen
 *    make speaker S2 perform a mapping between things they have heard and things they know, as expressed in vector form.
 
-WARNING: at this time (May 1st, 2017), the mapping (linear regression) is bugged!
 
 [quality-image]:https://img.shields.io/codeclimate/github/minimalparts/IdealWords.svg?style=flat-square
 [quality-url]:https://codeclimate.com/github/minimalparts/IdealWords
