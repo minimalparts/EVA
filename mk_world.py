@@ -9,6 +9,9 @@ from utils import read_dataset, cosine_similarity, printer, mk_ideal_matrix, mk_
 
 np.set_printoptions(suppress=True)
 
+'''Define a test species, to check that S2 has learnt.'''
+test_species = sys.argv[1]
+
 '''Create data directory if it does not exist.'''
 if not os.path.exists("./data"):
     os.makedirs("./data")
@@ -57,21 +60,22 @@ world_file.close()
 S1 = speaker.Speaker("S1",vocabulary)
 S2 = speaker.Speaker("S2",vocabulary)
 
-'''Situations S1 was exposed to. 100 of them.'''
+'''Situations S1 was exposed to. 500 of them.'''
 s1_situations = random.sample(a_world.situations,500)
 for s in s1_situations:
   #print "S1 experiences",e.ID
   S1.experience(s)
 
-'''Situations S2 was exposed to. 500 of them.'''
+'''Situations S2 was exposed to. 500 of them. Make sure to retain some animals for testing.'''
 s2_situations = random.sample(a_world.situations,500)
 for s in s2_situations:
-  S2.experience(s)
+  if not any(e.species == test_species for e in s.entities):
+    S2.experience(s)
 
 '''S1 says stuff about the world. S2 listens.'''
 s1_utterances = []
 for s in S1.situations:
-  s1_utterances = S1.tell(s)
+  s1_utterances = S1.tell(s,test_species)
   S2.hear(s1_utterances)
         
 S1.mk_vectors(True)
@@ -109,10 +113,10 @@ inferences = normalise(np.dot(entire_dist_space,w))
 #        print vocabulary.id_to_contexts[j], s2_ideal_space[i][j], test[i][j]
     
 #Now output all values
-print "\n\nNow let's check what S2 has inferred from the learnt regression. \
-Also for concepts they did not know before."
+print "\n\nNow let's check what S2 has inferred from the learnt regression for the test species."
 for i in range(len(S2.distributional_vector_space.vectors)):
-  print "\n",i,vocabulary.words[i]
-  for j in range(len(inferences[i])):
-    if inferences[i][j] > 0.05:
-      print vocabulary.id_to_contexts[j], inferences[i][j]
+  if vocabulary.words[i] == test_species:
+    print "\n",i,vocabulary.words[i]
+    for j in range(len(inferences[i])):
+      if inferences[i][j] > 0.5:
+        print vocabulary.id_to_contexts[j], inferences[i][j]

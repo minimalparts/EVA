@@ -73,15 +73,19 @@ class Speaker(object):
         
 
 
-    def tell(self,situation):
-        '''Tell *some* stuff about the situation (in logical forms)'''
+    def tell(self,situation,test_species):
+        '''Tell *some* stuff about the situation (in logical forms).
+	Make sure to tell about the test species (so that we have enough data!'''
 
-        #print "\n",self.name,"tells things about situation",situation.ID,"..."
+        print "\n",self.name,"tells things about situation",situation.ID,"..."
         es = []
         fs = []
         utterances = []
+        for e in situation.entities:
+          if e.species == test_species:
+            es.append(e)
         num_es = random.randint(1,len(situation.entities))
-        es = random.sample(situation.entities,num_es)
+        es = list(set(es + random.sample(situation.entities,num_es)))
         #es = situation.entities
     
         for e in es:
@@ -92,7 +96,7 @@ class Speaker(object):
            #for f in e.features:
                #print e.name, e.species, f
                u = "<[a("+e.name+"), "+e.species+"("+e.name+"), "+f+"("+e.name+")]"+situation.ID+">"
-               #print u
+               print u
                utterances.append(u)
         return utterances
 
