@@ -1,0 +1,182 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>model &mdash; IdealWords 0.9 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.9',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="IdealWords 0.9 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for model</h1><div class="highlight"><pre>
+<span></span><span class="c1">#A model. We can set it up so that it is *the* model in a truth-theoretic way</span>
+<span class="c1">#or a speaker&#39;s model in &#39;speaker-dependent truth&#39; setup.</span>
+
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">world</span>
+<span class="kn">import</span> <span class="nn">grammar</span>
+
+<div class="viewcode-block" id="Entity"><a class="viewcode-back" href="../model.html#model.Entity">[docs]</a><span class="k">class</span> <span class="nc">Entity</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;An entity in the model corresponds to a thing in the world.</span>
+<span class="sd">    Attributes are converted to predicates here.&#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">thing</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ID</span> <span class="o">=</span> <span class="n">thing</span><span class="o">.</span><span class="n">ID</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">predicates</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">situations</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">thing</span><span class="o">.</span><span class="n">attributes</span><span class="p">:</span>
+            <span class="sd">&#39;&#39;&#39;This entity is in a particular set, denoted by a particular predicate.&#39;&#39;&#39;</span>
+            <span class="k">if</span> <span class="n">a</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;N&#39;</span><span class="p">:</span>
+                <span class="n">predicate</span> <span class="o">=</span> <span class="n">grammar</span><span class="o">.</span><span class="n">Noun</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">a</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;V&#39;</span><span class="p">:</span>
+                <span class="n">predicate</span> <span class="o">=</span> <span class="n">grammar</span><span class="o">.</span><span class="n">Verb</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">predicates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">predicate</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">thing</span><span class="o">.</span><span class="n">scenes</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">situations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Situation"><a class="viewcode-back" href="../model.html#model.Situation">[docs]</a><span class="k">class</span> <span class="nc">Situation</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;A situation in the model corresponds to a scene in the world.&#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scene</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ID</span> <span class="o">=</span> <span class="n">scene</span><span class="o">.</span><span class="n">ID</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">entities</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">thing</span> <span class="ow">in</span> <span class="n">scene</span><span class="o">.</span><span class="n">things</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">entities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">thing</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Model"><a class="viewcode-back" href="../model.html#model.Model">[docs]</a><span class="k">class</span> <span class="nc">Model</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39;The domain is made of collections of entities and situations in the world.&#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">entities</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">situations</span> <span class="o">=</span> <span class="p">[]</span>
+
+<div class="viewcode-block" id="Model.mk_truth_theoretic"><a class="viewcode-back" href="../model.html#model.Model.mk_truth_theoretic">[docs]</a>    <span class="k">def</span> <span class="nf">mk_truth_theoretic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">world</span><span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39;In this setup, the model is a perfect reflection of the world.&#39;&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">thing</span> <span class="ow">in</span> <span class="n">world</span><span class="o">.</span><span class="n">things</span><span class="p">:</span>
+            <span class="n">e</span> <span class="o">=</span> <span class="n">Entity</span><span class="p">(</span><span class="n">thing</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">entities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+	<span class="k">for</span> <span class="n">scene</span> <span class="ow">in</span> <span class="n">world</span><span class="o">.</span><span class="n">scenes</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="n">Situation</span><span class="p">(</span><span class="n">scene</span><span class="p">)</span>
+	    <span class="bp">self</span><span class="o">.</span><span class="n">situations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Model.mk_speaker_model"><a class="viewcode-back" href="../model.html#model.Model.mk_speaker_model">[docs]</a>    <span class="k">def</span> <span class="nf">mk_speaker_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">world</span><span class="p">,</span> <span class="n">num_entities</span><span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39;In this setup, the model is initialised with a random set of</span>
+<span class="sd">        experiences for the speaker.&#39;&#39;&#39;</span>
+        <span class="n">things</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">world</span><span class="o">.</span><span class="n">things</span><span class="p">,</span><span class="n">num_entities</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">thing</span> <span class="ow">in</span> <span class="n">things</span><span class="p">:</span>
+            <span class="n">e</span> <span class="o">=</span> <span class="n">Entity</span><span class="p">(</span><span class="n">thing</span><span class="p">)</span>
+	    <span class="bp">self</span><span class="o">.</span><span class="n">entities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
+        <span class="c1">#TODO: sort out situations</span>
+
+<div class="viewcode-block" id="Model.true_interpretation"><a class="viewcode-back" href="../model.html#model.Model.true_interpretation">[docs]</a>    <span class="k">def</span> <span class="nf">true_interpretation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u</span><span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39;The interpretation function in a truth-theoretic setting. </span>
+<span class="sd">        Given an utterance (proposition or predication), return a </span>
+<span class="sd">        truth-value (proposition) and/or a set (predication).&#39;&#39;&#39;</span>
+
+        <span class="n">truth_value</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">denotation</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">u</span><span class="p">,</span><span class="n">grammar</span><span class="o">.</span><span class="n">Noun</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">u</span><span class="p">,</span><span class="n">grammar</span><span class="o">.</span><span class="n">Verb</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">entity</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">entities</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">predicate</span> <span class="ow">in</span> <span class="n">entity</span><span class="o">.</span><span class="n">predicates</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">predicate</span><span class="o">.</span><span class="n">surface</span> <span class="o">==</span> <span class="n">u</span><span class="o">.</span><span class="n">surface</span><span class="p">:</span> 
+                        <span class="c1">#print &quot;Match:&quot;,entity.ID</span>
+                        <span class="n">denotation</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">entity</span><span class="p">)</span>
+            <span class="n">denotation</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">denotation</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">u</span><span class="p">,</span><span class="nb">basestring</span><span class="p">):</span>
+            <span class="n">ID</span><span class="p">,</span> <span class="n">pred1</span><span class="p">,</span> <span class="n">pred2</span> <span class="o">=</span> <span class="n">grammar</span><span class="o">.</span><span class="n">parse_sentence</span><span class="p">(</span><span class="n">u</span><span class="p">)</span>
+            <span class="n">t1</span><span class="p">,</span> <span class="n">denotation1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">true_interpretation</span><span class="p">(</span><span class="n">pred1</span><span class="p">)</span>
+            <span class="n">t2</span><span class="p">,</span> <span class="n">denotation2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">true_interpretation</span><span class="p">(</span><span class="n">pred2</span><span class="p">)</span>
+            <span class="n">denotation</span> <span class="o">=</span> <span class="n">denotation1</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">denotation2</span><span class="p">)</span>
+            
+        <span class="k">if</span>  <span class="nb">len</span><span class="p">(</span><span class="n">denotation</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">truth_value</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">truth_value</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">return</span> <span class="n">truth_value</span><span class="p">,</span><span class="n">denotation</span></div>
+
+<div class="viewcode-block" id="Model.print_me"><a class="viewcode-back" href="../model.html#model.Model.print_me">[docs]</a>    <span class="k">def</span> <span class="nf">print_me</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+        <span class="sd">&#39;&#39;&#39;Output model&#39;&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">entity</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">entities</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s2">&quot;ENTITY &quot;</span><span class="o">+</span><span class="n">entity</span><span class="o">.</span><span class="n">ID</span>
+            <span class="n">pred_list</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">entity</span><span class="o">.</span><span class="n">predicates</span><span class="p">:</span>
+                <span class="n">pred_list</span><span class="o">+=</span><span class="n">p</span><span class="o">.</span><span class="n">form</span><span class="o">+</span><span class="s2">&quot; &quot;</span>
+            <span class="k">print</span> <span class="n">pred_list</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Aurelie Herbelot.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

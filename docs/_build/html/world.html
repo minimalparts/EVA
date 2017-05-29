@@ -44,37 +44,48 @@
   <div class="section" id="module-world">
 <span id="the-world-module"></span><h1>The world module<a class="headerlink" href="#module-world" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
-<dt id="world.Instance">
-<em class="property">class </em><code class="descclassname">world.</code><code class="descname">Instance</code><span class="sig-paren">(</span><em>name</em>, <em>species</em>, <em>features</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/world.html#Instance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#world.Instance" title="Permalink to this definition">¶</a></dt>
+<dt id="world.Scene">
+<em class="property">class </em><code class="descclassname">world.</code><code class="descname">Scene</code><span class="sig-paren">(</span><em>ID</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/world.html#Scene"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#world.Scene" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>A scene has an ID and involves a number of things.</p>
 </dd></dl>
 
 <dl class="class">
-<dt id="world.Situation">
-<em class="property">class </em><code class="descclassname">world.</code><code class="descname">Situation</code><span class="sig-paren">(</span><em>ID</em>, <em>entities</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/world.html#Situation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#world.Situation" title="Permalink to this definition">¶</a></dt>
+<dt id="world.Thing">
+<em class="property">class </em><code class="descclassname">world.</code><code class="descname">Thing</code><span class="sig-paren">(</span><em>ID</em>, <em>attributes</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/world.html#Thing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#world.Thing" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>A thing has an ID (a string variable), a kind (a string) and
+some information about which attributes it has, and in which scenes
+it occurs.</p>
 </dd></dl>
 
 <dl class="class">
 <dt id="world.World">
-<em class="property">class </em><code class="descclassname">world.</code><code class="descname">World</code><span class="sig-paren">(</span><em>situations</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/world.html#World"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#world.World" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">world.</code><code class="descname">World</code><span class="sig-paren">(</span><em>probability_file</em>, <em>num_entities</em>, <em>num_scenes</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/world.html#World"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#world.World" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>The following are utility functions to generate a world.</p>
+<dl class="method">
+<dt id="world.World.check_incompatibilities">
+<code class="descname">check_incompatibilities</code><span class="sig-paren">(</span><em>thing</em>, <em>attribute</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/world.html#World.check_incompatibilities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#world.World.check_incompatibilities" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="world.World.sample_scene">
+<code class="descname">sample_scene</code><span class="sig-paren">(</span><em>ID</em>, <em>things</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/world.html#World.sample_scene"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#world.World.sample_scene" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="world.World.sample_thing">
+<code class="descname">sample_thing</code><span class="sig-paren">(</span><em>ID</em>, <em>kinds</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/world.html#World.sample_thing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#world.World.sample_thing" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="world.World.scenes">
+<code class="descname">scenes</code><em class="property"> = None</em><a class="headerlink" href="#world.World.scenes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Record probability data to generate the world</p>
 </dd></dl>
 
-<dl class="function">
-<dt id="world.check_incompatibilities">
-<code class="descclassname">world.</code><code class="descname">check_incompatibilities</code><span class="sig-paren">(</span><em>animal</em>, <em>feature</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/world.html#check_incompatibilities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#world.check_incompatibilities" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="world.sample_animal">
-<code class="descclassname">world.</code><code class="descname">sample_animal</code><span class="sig-paren">(</span><em>name</em>, <em>animals</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/world.html#sample_animal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#world.sample_animal" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="world.sample_situation">
-<code class="descclassname">world.</code><code class="descname">sample_situation</code><span class="sig-paren">(</span><em>ID</em>, <em>animal_instances</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/world.html#sample_situation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#world.sample_situation" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+</dd></dl>
 
 </div>
 

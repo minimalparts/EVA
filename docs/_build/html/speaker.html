@@ -24,8 +24,8 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="IdealWords 0.9 documentation" href="index.html" />
-    <link rel="next" title="&lt;no title&gt;" href="world.html" />
-    <link rel="prev" title="Welcome to the documentation for the Ideal Words project!" href="index.html" />
+    <link rel="next" title="The world module" href="world.html" />
+    <link rel="prev" title="Documentation for the Ideal Words project" href="index.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -45,17 +45,13 @@
 <span id="the-speaker-module"></span><h1>The speaker module<a class="headerlink" href="#module-speaker" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="speaker.Speaker">
-<em class="property">class </em><code class="descclassname">speaker.</code><code class="descname">Speaker</code><span class="sig-paren">(</span><em>name</em>, <em>vocab</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/speaker.html#Speaker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#speaker.Speaker" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">speaker.</code><code class="descname">Speaker</code><span class="sig-paren">(</span><em>name</em>, <em>vocab</em>, <em>model</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/speaker.html#Speaker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#speaker.Speaker" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
 <dl class="method">
 <dt id="speaker.Speaker.experience">
-<code class="descname">experience</code><span class="sig-paren">(</span><em>situation</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/speaker.html#Speaker.experience"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#speaker.Speaker.experience" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="speaker.Speaker.get_things_heard">
-<code class="descname">get_things_heard</code><span class="sig-paren">(</span><em>space</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/speaker.html#Speaker.get_things_heard"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#speaker.Speaker.get_things_heard" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get vectors from things heard by the speaker, to learn correspondence with things <em>known</em>.</p>
+<code class="descname">experience</code><span class="sig-paren">(</span><em>entity</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/speaker.html#Speaker.experience"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#speaker.Speaker.experience" title="Permalink to this definition">¶</a></dt>
+<dd><p>Experiencing a new situation means appending it to the stored situations
+and updating the entity store.</p>
 </dd></dl>
 
 <dl class="method">
@@ -77,19 +73,15 @@ count for a particular context is incremented once per situation.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="speaker.Speaker.parse_utterance">
-<code class="descname">parse_utterance</code><span class="sig-paren">(</span><em>utterance</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/speaker.html#Speaker.parse_utterance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#speaker.Speaker.parse_utterance" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
 <dt id="speaker.Speaker.tell">
-<code class="descname">tell</code><span class="sig-paren">(</span><em>situation</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/speaker.html#Speaker.tell"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#speaker.Speaker.tell" title="Permalink to this definition">¶</a></dt>
-<dd><p>Tell <em>some</em> stuff about the situation (in logical forms)</p>
+<code class="descname">tell</code><span class="sig-paren">(</span><em>situation</em>, <em>test_kind</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/speaker.html#Speaker.tell"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#speaker.Speaker.tell" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tell <em>some</em> stuff about the situation (in logical forms).
+Make sure to tell about the test kind (so that we have enough data!</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="speaker.Speaker.update_sparse_entities">
-<code class="descname">update_sparse_entities</code><span class="sig-paren">(</span><em>situation</em>, <em>experienced</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/speaker.html#Speaker.update_sparse_entities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#speaker.Speaker.update_sparse_entities" title="Permalink to this definition">¶</a></dt>
+<dt id="speaker.Speaker.update_entity_sets">
+<code class="descname">update_entity_sets</code><span class="sig-paren">(</span><em>entity</em>, <em>experienced</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/speaker.html#Speaker.update_entity_sets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#speaker.Speaker.update_entity_sets" title="Permalink to this definition">¶</a></dt>
 <dd><p>Assumption: also filling linguistic entities from experiences (not just utterances the speaker was exposed to)</p>
 </dd></dl>
 
@@ -106,8 +98,8 @@ count for a particular context is incremented once per situation.</p>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="index.html" title="previous chapter">Welcome to the documentation for the Ideal Words project!</a></li>
-      <li>Next: <a href="world.html" title="next chapter">&lt;no title&gt;</a></li>
+      <li>Previous: <a href="index.html" title="previous chapter">Documentation for the Ideal Words project</a></li>
+      <li>Next: <a href="world.html" title="next chapter">The world module</a></li>
   </ul></li>
 </ul>
 </div>

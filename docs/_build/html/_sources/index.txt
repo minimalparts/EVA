@@ -6,26 +6,33 @@
 Documentation for the Ideal Words project
 =========================================
 
-This is a simulation of a toy animal world, and of the interaction of two
-speakers about this world. Run with
+Run with
 
-python ./mk_world.py
+`python ./mk_world.py [test_species]`
+
+For instance:
+
+`python ./mk_world.py cobra`
+
+The test species is a species that the hearer has only 'heard' about, but never seen.
 
 The program will:
 
-* create a world
+*    create a world
 
-* create situations in that world
+*    create situations in that world
 
-* sample situations that speaker S1 has experienced
+*    sample situations that speaker S1 has experienced
 
-* make speaker S1 utter some simple sentences  about those situations
+*    make speaker S1 utter some simple sentences about those situations
 
-* make speaker S2 listen
+*    make speaker S2 listen
 
-* make speaker S2 perform a mapping between things they have heard and things they know, as expressed in vector form.
+*    make speaker S2 perform a mapping between things they have heard and things they know, as expressed in vector form.
 
-WARNING: at this time (May 1st, 2017), the mapping (linear regression) is bugged!
+*    make speaker S2 infer things about the test species.
+
+
 
 
 
@@ -34,6 +41,8 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+   model
+   grammar
    speaker
    world
    distributional_semantics
