@@ -1,4 +1,5 @@
 import distributional_semantics
+import grammar
 import numpy as np
 from math import sqrt, fabs
 
@@ -32,31 +33,37 @@ def map_quantifier(quant):
 
 def read_dataset(data):
   animals = {}
-  vocab = distributional_semantics.Vocabulary()
+  vocab = grammar.Vocabulary()
 
   f=open(data,'r')
   for l in f:
     l=l.rstrip('\n')
     fields=l.split()
-    species=fields[0]
+    kind=fields[0]+"_N"
 
-    if species not in animals:
-      animals[species] = {}
-      vocab.words.append(species)
+    if kind not in animals:
+      animals[kind] = {}
+      vocab.words.append(kind)
 
-    feature=fields[1]
+    feature=fields[1]+"_V"
     quantifier=fields[2]
-    animals[species][feature] = map_quantifier(quantifier)
+    animals[kind][feature] = map_quantifier(quantifier)
     if feature not in vocab.words:
       vocab.words.append(feature)
+  f.close()
   
+  print "The vocabulary has",len(vocab.words),"entries."
+  
+  '''Record vocabulary'''
+  vocab_file=open("./data/vocabulary.txt",'w')
   c = 0
   for w in vocab.words: 
     vocab.contexts_to_id[w] = c
     vocab.id_to_contexts[c] = w
+    vocab_file.write(w+'\n')
     c+=1
+  vocab_file.close()
 
-  f.close()
   return animals, vocab
 
 def mk_ideal_matrix(ideal_vector_space, distributional_vector_space, dim, training):

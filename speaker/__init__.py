@@ -4,48 +4,48 @@ import random
 import utils
 import re
 import numpy as np
+import grammar
 
 class Speaker(object):
 
-    def __init__(self, name, vocab):
+    def __init__(self, name, vocab, model):
         self.name = name
-        self.situations = []
+        self.model = model
+        self.vocab = vocab
         self.told = []
         self.heard = []
-        self.sparse_entities = {}						#A dictionary of sets, whether entities, plurals, or whatever.
         self.distributional_vector_space = distributional_semantics.Space(vocab)
         self.ideal_vector_space = distributional_semantics.Space(vocab)
 
-    def experience(self, situation):
-        '''Experiencing a situation means appending it to the stored situations
+
+    def experience(self, entity):
+        '''Experiencing a new situation means appending it to the stored situations
         and updating the entity store.'''
-        self.situations.append(situation)
-        self.update_sparse_entities(situation,True)
+        self.model.entities.append(entity)
+        self.update_entity_sets(entity,True)
 
 
-
-    def update_sparse_entities(self,situation,experienced):
+    def update_entity_sets(self,entity,experienced):
         '''Assumption: also filling linguistic entities from experiences (not just utterances the speaker was exposed to)'''
-        '''For now, we are just appending 'e/h' to entity name, to convert it into a linguistic entity of type 'experienced' or 'heard'.'''
+        '''For now, we are just appending 'e/h' to entity ID, to convert it into a linguistic entity of type 'experienced' or 'heard'.'''
         '''The correspondence between linguistic and world entity is however not necessarily known to the speaker/hearer.'''
 
-        for entity in situation.entities:
-            linguistic_entity = entity.name+'k' if experienced else entity.name+'h'
-            if linguistic_entity not in self.sparse_entities:
-                se = distributional_semantics.SparseEntity(entity.species,linguistic_entity)
-                #In this simple implementation, we know that cardinality of entities is 1
-                se.cardinality = 1
-                self.sparse_entities[linguistic_entity] = se
-            se = self.sparse_entities[linguistic_entity]
-            for feature in entity.features:
-                context = distributional_semantics.Context(se.name,situation.ID)
-                context.dlfs.append(feature)
-                se.contexts.append(context)
-            context_set = []
-            for context in se.contexts:
-                for lf in context.dlfs:
-                    context_set.append(se.word+' '+str(context.args)+' '+lf+' '+context.situation)
-            utils.printer("./data/"+self.name+".context_sets.txt", context_set)
+        linguistic_entity = entity.ID+'k' if experienced else entity.ID+'h'
+        if linguistic_entity not in self.model.entities:
+            se = distributional_semantics.SparseEntity(linguistic_entity)
+            #In this simple implementation, we know that cardinality of entities is 1
+            se.cardinality = 1
+            self.sparse_entities[linguistic_entity] = se
+        se = self.sparse_entities[linguistic_entity]
+        for predicate in entity.predicates:
+            context = distributional_semantics.Context(se.ID,situation.ID)
+            context.dlfs.append(predicate)
+            se.contexts.append(context)
+        context_set = []
+        for context in se.contexts:
+            for lf in context.dlfs:
+                context_set.append(str(context.args)+' '+lf+' '+context.situation)
+        utils.printer("./data/"+self.name+".context_sets.txt", context_set)
                 
 
     def mk_vectors(self, know):
@@ -58,9 +58,9 @@ class Speaker(object):
 
         vector_type = 'k' if know else 'h'
         vector_space = self.ideal_vector_space if know else self.distributional_vector_space
-        for name,se in self.sparse_entities.items():
-            #print se.word, se.name, se.cardinality, [c.dlfs for c in se.contexts]
-            if name[-1] == vector_type:
+        for ID,se in self.sparse_entities.items():
+            #print se.word, se.ID, se.cardinality, [c.dlfs for c in se.contexts]
+            if ID[-1] == vector_type:
                 word = vector_space.contexts_to_id[se.word]
                 for feature in (feature for c in se.contexts for feature in c.dlfs):
                     feature = vector_space.contexts_to_id[feature]
@@ -73,16 +73,16 @@ class Speaker(object):
         
 
 
-    def tell(self,situation,test_species):
+    def tell(self,situation,test_kind):
         '''Tell *some* stuff about the situation (in logical forms).
-	Make sure to tell about the test species (so that we have enough data!'''
+	Make sure to tell about the test kind (so that we have enough data!'''
 
         print "\n",self.name,"tells things about situation",situation.ID,"..."
         es = []
         fs = []
         utterances = []
         for e in situation.entities:
-          if e.species == test_species:
+          if any(p == test_kind for p in e.predicates):
             es.append(e)
         num_es = random.randint(1,len(situation.entities))
         es = list(set(es + random.sample(situation.entities,num_es)))
@@ -91,22 +91,15 @@ class Speaker(object):
         for e in es:
            #Only report on a maximum of 3 features
            num_fs = random.randint(1,3)
-           fs = random.sample(e.features, num_fs)
+           fs = random.sample(e.predicates, num_fs)
            for f in fs:
            #for f in e.features:
-               #print e.name, e.species, f
-               u = "<[a("+e.name+"), "+e.species+"("+e.name+"), "+f+"("+e.name+")]"+situation.ID+">"
+               #print e.ID, e.kind, f
+               u = "<[("+e.ID+"), "+f+"("+e.ID+")]"+situation.ID+">"
                print u
                utterances.append(u)
         return utterances
 
-    def parse_utterance(self,utterance):
-        m = re.search(r"^<\[a\(.*, (.*)\((.*)\), (.*)\(.*\)\](.*)>",utterance)
-        word = m.group(1)
-        name = m.group(2)
-        feature = m.group(3)
-        situation = m.group(4)
-        return word, name, feature, situation
 
     def hear(self,utterances):
         '''Hear what another speaker has said about a situation. The hearer is supposed to know which situation is talked about.
@@ -115,19 +108,19 @@ class Speaker(object):
         '''
 
         #print self.name,"hears..."
-        situation = self.parse_utterance(utterances[0])[3]
+        situation = grammar.parse_utterance(utterances[0])[2]
         if situation in self.situations:
            return -1						#situation is known to the hearer
         s = world.Situation(situation,[])			#temporary situation to store entities from the speaker's utterances
         self.situations.append(situation)        
         for u in utterances:
-            word, name, feature, situation = self.parse_utterance(u)
-            if not any(e.name == name for e in s.entities):
-              x = world.Entity(name,word,[])
+            ID, predicate, situation = grammar.parse_utterance(u)
+            if not any(e.ID == ID for e in s.entities):
+              x = world.Entity(ID,[])
               s.entities.append(x)
             for e in s.entities:
-              if e.name == name:
-                e.features.append(feature)
-                #print "Heard:",e.name,feature
+              if e.ID == ID:
+                e.predicates.append(predicate)
+                #print "Heard:",e.ID,feature
         self.update_sparse_entities(s,False)
        

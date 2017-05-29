@@ -1,17 +1,9 @@
 import numpy as np
 
-class Vocabulary(object):
-
-    def __init__(self):
-        self.words = []
-        self.contexts_to_id = {}
-        self.id_to_contexts = {}
-
-class SparseEntity(object):
-    '''An entity with its contexts, which in principle could be a set of any cardinality.'''
-    def __init__(self, word, var_name):
-        self.name = var_name
-        self.word = word		#word (label) of the sparse entity vector
+class EntitySet(object):
+    '''An set with its contexts, which in principle could be of any cardinality.'''
+    def __init__(self, var_ID):
+        self.ID = var_ID
         self.cardinality = -1		#cardinality of the set. -1 for unknown
         self.contexts = []		
 
