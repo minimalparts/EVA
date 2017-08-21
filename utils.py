@@ -31,7 +31,19 @@ def map_quantifier(quant):
   qmap = {"no":0, "few":0.05, "some":0.35, "most":0.95, "all":1}
   return qmap[quant]
 
-def read_dataset(data):
+def record_vocab(properties, file_name):
+  '''Record vocabulary'''
+  vocab_file=open(file_name,'w')
+  c = 0
+  for w in properties: 
+    vocab.labels_to_pos[w] = c
+    vocab.pos_to_labels[c] = w
+    vocab_file.write(w+'\n')
+    c+=1
+  vocab_file.close()
+
+
+def read_prob_file(data):
   animals = {}
   vocab = grammar.Vocabulary()
 
@@ -48,23 +60,36 @@ def read_dataset(data):
     feature=fields[1]+"_V"
     quantifier=fields[2]
     animals[kind][feature] = map_quantifier(quantifier)
-    if feature not in vocab.words:
+    if feature not in vocab.word_strings:
       vocab.words.append(feature)
   f.close()
   
   print "The vocabulary has",len(vocab.words),"entries."
-  
-  '''Record vocabulary'''
-  vocab_file=open("./data/vocabulary.txt",'w')
-  c = 0
-  for w in vocab.words: 
-    vocab.contexts_to_id[w] = c
-    vocab.id_to_contexts[c] = w
-    vocab_file.write(w+'\n')
-    c+=1
-  vocab_file.close()
-
   return animals, vocab
+
+
+def read_world_file(data, lexicon):
+  instances = {}
+  properties = []
+  f=open(data,'r')
+  for l in f:
+    l=l.rstrip('\n')
+    fields=l.split()
+    ID=fields[0]
+
+    if ID not in instances:
+      instances[ID] = []
+
+    prop=fields[1]
+    properties.append(prop)
+    instances[ID].append(prop)
+    if prop not in lexicon:
+      print "ERROR: unknown word in word file:",prop,". The world should be described in terms of the overall lexicon."
+  f.close()
+  
+  print "The vocabulary has",len(lexicon),"entries."
+  return instances
+
 
 def mk_ideal_matrix(ideal_vector_space, distributional_vector_space, dim, training):
   '''Make ideal numpy matrix out of vector space object.

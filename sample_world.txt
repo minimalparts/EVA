@@ -1,0 +1,9 @@
+x1 tree
+x1 oak
+x1 old
+x2 tree
+x2 old
+x2 oak
+x3 tree
+x3 birch
+x3 young

@@ -19,10 +19,25 @@ class Space(object):
 
     def __init__(self, vocab):
         self.vectors={}
-        self.contexts_to_id = vocab.contexts_to_id
-        self.id_to_contexts = vocab.id_to_contexts
-        for word_id in self.id_to_contexts:
-            self.vectors[word_id] = np.zeros(len(vocab.words))
+        self.labels_to_pos = vocab.labels_to_pos
+        self.pos_to_labels = vocab.pos_to_labels
+        for word_id in self.pos_to_labels:
+            self.vectors[word_id] = np.zeros(len(vocab.lexicon))
+
+    def get_predicates(self,vector):
+        '''Return the predicates corresponding to non-zero items in vector.'''
+        predicates = []
+        for i in range(len(vector)):
+            if vector[i] > 0:
+                predicates.append(self.pos_to_labels[i])
+        return predicates
+
+    def update_kinds(self, entity):
+        print entity.ID
+        if entity.ID in self.vectors:
+            predicates = self.get_predicates(self.vectors[entity.ID])
+	    print predicates
+    
 
 def linalg(mat_heard,mat_known):
 

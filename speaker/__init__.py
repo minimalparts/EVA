@@ -1,4 +1,5 @@
 import distributional_semantics
+import model
 import world
 import random
 import utils
@@ -17,6 +18,13 @@ class Speaker(object):
         self.distributional_vector_space = distributional_semantics.Space(vocab)
         self.ideal_vector_space = distributional_semantics.Space(vocab)
 
+    def function_words(self,lexicon):
+        '''Get function words from lexicon'''
+        function_words = {}
+        for k,v in lexicon.items():
+            if v.pos == 'D' or v.lemma == "be":
+                function_words[v.surface] = v
+        return function_words
 
     def experience(self, entity):
         '''Experiencing a new situation means appending it to the stored situations
@@ -61,9 +69,9 @@ class Speaker(object):
         for ID,se in self.sparse_entities.items():
             #print se.word, se.ID, se.cardinality, [c.dlfs for c in se.contexts]
             if ID[-1] == vector_type:
-                word = vector_space.contexts_to_id[se.word]
+                word = vector_space.labels_to_pos[se.word]
                 for feature in (feature for c in se.contexts for feature in c.dlfs):
-                    feature = vector_space.contexts_to_id[feature]
+                    feature = vector_space.labels_to_pos[feature]
                     for vec, context in ((word, feature), (feature, word)):
                         vector_space.vectors[vec][context] += 1
         out = []
@@ -71,56 +79,59 @@ class Speaker(object):
           out.append(vector_space.id_to_contexts[k]+" "+' '.join([str(n) for n in v]))
         utils.printer("./data/"+self.name+"."+vector_type+".vectors.txt",out)
         
+    def mk_set_vector(self,e):
+        '''Create a frequency vector for a set.'''
+
+        vector_space = self.ideal_vector_space if e.ID[-1] == 'h' else self.distributional_vector_space
+        #print vector_space.pos_to_labels
+        if e.ID not in vector_space.labels_to_pos:
+            new_pos = len(vector_space.labels_to_pos)
+            vector_space.labels_to_pos[e.ID] = new_pos
+            vector_space.pos_to_labels[new_pos] = e.ID
+            vector_space.vectors[new_pos] = np.zeros(len(vector_space.vectors[0])) 
+        for predicate in e.predicates:
+	    pred_pos = vector_space.labels_to_pos[predicate.form]
+	    set_pos = vector_space.labels_to_pos[e.ID]
+	    vector_space.vectors[set_pos][pred_pos] += 1
+
+        print e.ID,vector_space.vectors[vector_space.labels_to_pos[e.ID]]
+        vector_space.update_kinds(e)
+         
 
 
-    def tell(self,situation,test_kind):
-        '''Tell *some* stuff about the situation (in logical forms).
-	Make sure to tell about the test kind (so that we have enough data!'''
-
-        print "\n",self.name,"tells things about situation",situation.ID,"..."
-        es = []
-        fs = []
-        utterances = []
-        for e in situation.entities:
-          if any(p == test_kind for p in e.predicates):
-            es.append(e)
-        num_es = random.randint(1,len(situation.entities))
-        es = list(set(es + random.sample(situation.entities,num_es)))
-        #es = situation.entities
-    
-        for e in es:
-           #Only report on a maximum of 3 features
-           num_fs = random.randint(1,3)
-           fs = random.sample(e.predicates, num_fs)
-           for f in fs:
-           #for f in e.features:
-               #print e.ID, e.kind, f
-               u = "<[("+e.ID+"), "+f+"("+e.ID+")]"+situation.ID+">"
-               print u
-               utterances.append(u)
-        return utterances
+    def tell(self,entity):
+        '''Tell *some* stuff about an entity (in logical forms).
+        Assume some kind of coref (the speaker makes it clear that
+        all sentences are about the same entity.'''
+        words = []
+        for p in entity.predicates:
+            words.append(p.form)
+        sampled_words = random.sample(words, random.randint(1,len(words)))
+        sentences = grammar.generate(sampled_words)
+        return sentences
 
 
-    def hear(self,utterances):
-        '''Hear what another speaker has said about a situation. The hearer is supposed to know which situation is talked about.
-        I.e. for now, we assume that the hearer knows whether s/he shared the experience with the speaker.
-        We also assume that speaker and hearer agree on what they have seen.
+    def hear(self,utterance):
+        '''Hear what another speaker has said about a set of entities.
+        If the sentence is true to the hearer, the assumption is that the speaker
+        is referring to someting known to the hearer. Otherwise, update model.
         '''
-
         #print self.name,"hears..."
-        situation = grammar.parse_utterance(utterances[0])[2]
-        if situation in self.situations:
-           return -1						#situation is known to the hearer
-        s = world.Situation(situation,[])			#temporary situation to store entities from the speaker's utterances
-        self.situations.append(situation)        
-        for u in utterances:
-            ID, predicate, situation = grammar.parse_utterance(u)
-            if not any(e.ID == ID for e in s.entities):
-              x = world.Entity(ID,[])
-              s.entities.append(x)
-            for e in s.entities:
-              if e.ID == ID:
-                e.predicates.append(predicate)
-                #print "Heard:",e.ID,feature
-        self.update_sparse_entities(s,False)
-       
+        truth, denotation = self.model.true_interpretation(utterance)
+        print "INTERPRET",truth, 
+        for e in denotation:
+            print e.ID
+        '''If the interpretation of the sentence is false, add info to model.
+        The hearer trusts the speaker completely. One new entity is produced
+        for each sentence (we don't know about co-reference).'''
+        if not truth:
+            ID, p1, p2 = grammar.parse_sentence(utterance)
+            print "PARSE", ID, p1.form, p2.form
+            t = world.Thing(ID.replace('l','h'),[p1.form,p2.form])
+            print t.attributes
+            e = model.Entity(t)
+            #print e.ID,e.IDg,e.predicates
+            print "Appending entity to model", e.ID
+            self.model.entities.append(e)
+            self.mk_set_vector(e)
+        return truth    

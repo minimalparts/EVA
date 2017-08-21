@@ -8,7 +8,7 @@ import world
 import model
 import grammar
 import speaker
-from utils import read_dataset, printer
+from utils import read_prob_file, read_world_file, printer
 
 np.set_printoptions(suppress=True)
 
@@ -29,42 +29,40 @@ for f in os.listdir(folder):
 
 
 '''Start of simulation. Create a world.'''
-real_world = world.World("../animal-dataset.txt",50,30)
-
+real_world = world.World()
+#real_world.populate_random("../animal-dataset.txt",50,30)
+vocab = a_world.populate_from_file("../sample_world.txt")
 
 
 '''Let's share the vocab between speakers for now.'''
-kinds, vocab = read_dataset("../animal-dataset.txt")
+#kinds, vocab = read_prob_file("../animal-dataset.txt")
 
 '''Make S1'''
 print "Making speaker S1..."
 m1 = model.Model()
-m1.mk_speaker_model(real_world,30)
+m1.mk_speaker_model(real_world,30,"1")
 m1.print_me()
 S1 = speaker.Speaker("Kim",vocab,m1)
 
 '''Make S2'''
 print "Making speaker S2..."
 m2 = model.Model()
-m2.mk_speaker_model(real_world,30)
+m2.mk_speaker_model(real_world,30,"2")
 m2.print_me()
 S2 = speaker.Speaker("Sandy",vocab,m2)
 
 print "\n\nSpeaker overlap (the instances that both speakers know about)...\n\n"
 s1_e=[]
 for e in S1.model.entities:
-    s1_e.append(e.ID)
+    s1_e.append(e.IDg)
 s2_e=[]
 for e in S2.model.entities:
-    s2_e.append(e.ID)
-print set(S1.model.entities).intersection(set(S2.model.entities))
+    s2_e.append(e.IDg)
+print set(s1_e).intersection(set(s2_e))
 
 '''Refer: generate sentences about the actual entities of the domain.'''
 for entity in S1.model.entities:
-    words = []
-    for p in entity.predicates:
-        words.append(p.form)
-    sentences = grammar.generate(words)
+    sentences = S1.tell(entity)
     for s in sentences:
         print "S1 says about",entity.ID,":",s
 

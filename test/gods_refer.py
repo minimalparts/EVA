@@ -8,7 +8,7 @@ import world
 import model
 import grammar
 import speaker
-from utils import read_dataset, printer
+from utils import read_prob_file, read_world_file, printer
 
 np.set_printoptions(suppress=True)
 
@@ -27,37 +27,42 @@ for f in os.listdir(folder):
     except Exception as e:
         print(e)
 
+v = grammar.Vocabulary("../grammar/lexicon.txt")
 
 '''Start of simulation. Create a world.'''
-a_world = world.World("../animal-dataset.txt",15,3)
+a_world = world.World()
+#a_world.populate_random("../animal-dataset.txt",15,3)
+a_world.populate_from_file("../sample_world.txt", v.lexicon)
 
 '''Create a truth-theoretic model corresponding to the world.'''
 true_model = model.Model()
-true_model.mk_truth_theoretic(a_world)
+true_model.mk_truth_theoretic(a_world, v.lexicon)
 
 '''Output world'''
 for entity in true_model.entities:
     print "ENTITY "+entity.ID
     pred_list = ""
     for p in entity.predicates:
-        pred_list+=p.form+" "
+        pred_list+=p.surface+" "
     print pred_list[:-1]
 
-kinds, vocab = read_dataset("../animal-dataset.txt")
-god1 = speaker.Speaker("Vishnu",vocab,true_model)
-god2 = speaker.Speaker("Artemis",vocab,true_model)
+#kinds, vocab = read_prob_file("../animal-dataset.txt")
+god1 = speaker.Speaker("Vishnu",v,true_model)
+god2 = speaker.Speaker("Artemis",v,true_model)
+
+        
 
 '''Refer: generate sentences about the actual entities of the domain.'''
 for entity in god1.model.entities:
-    words = []
+    words = god1.function_words(v.lexicon)
     for p in entity.predicates:
-        words.append(p.form)
+        words[p.surface] = v.lexicon[p.surface]
     sentences = grammar.generate(words)
     for s in sentences:
-        print "Vishnu says about",entity.ID,":",s
+        print "\nVishnu says about",entity.ID,":",s
 
         '''Sanity check. Is it really true?'''
-        truth, denotation = god2.model.true_interpretation(s)
+        truth, justification = god2.model.interpretation_function_S(s,v.lexicon)
         print "Artemis thinks this sentence is",truth
-        for e in denotation:
+        for e in justification:
             print e.ID

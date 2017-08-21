@@ -17,3 +17,5 @@ A number of tests are implemented in the test folder. More are coming.
 * *gods_refer.py* tests the alignment between two omniscient speakers (and the same grammar). Vishnu utters things that are true according to his model of the world (i.e. a subset of the sentences he could generate -- see *generate.py*. Artemis evaluates the truth of Vishnu's sentences and a) finds them all true; b) returns the non-empty set that makes the sentence true.
 
 * *humans_refer.py* tests the alignment between two speakers who have experienced different parts of the world (represented as two different models). This shows that without extra inference, reference fails for some sentences that speaker *S1* holds true, but do not correspond to anything in *S2*'s model.
+
+* *humans_simple_update.py* tests the hear function. In case the hearer returns an empty set when hearing the speaker's denotation to an entity, s/he integrates that entity into his/her model, with the attribute(s) that were specifically given by the speaker.

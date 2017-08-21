@@ -5,6 +5,7 @@ import sys
 import world
 import model
 import grammar
+import random
 
 '''Create data directory if it does not exist.'''
 if not os.path.exists("./data"):
@@ -21,28 +22,31 @@ for f in os.listdir(folder):
     except Exception as e:
         print(e)
 
+v = grammar.Vocabulary("../grammar/lexicon.txt")
+
+lemmas = [e.lemma for k,e in v.lexicon.items()]
+test_word = random.sample(lemmas, 1)[0]
+print "TESTING DENOTATION OF:",test_word
 
 '''Start of simulation. Create a world.'''
-a_world = world.World("../animal-dataset.txt",50,30)
+a_world = world.World()
+#a_world.populate_random("../noun-dataset.txt",5,3)
+a_world.populate_from_file("../sample_world.txt", v.lexicon)
 
 '''Create a truth-theoretic model corresponding to the world.'''
 true_model = model.Model()
-true_model.mk_truth_theoretic(a_world)
+true_model.mk_truth_theoretic(a_world, v.lexicon)
 
-'''Output world and pick test animal'''
-print "Printing world entities..."
-test_animal = None
+'''Output world'''
+print "\nPrinting world entities..."
+test_noun = None
 for entity in true_model.entities:
-    if test_animal == None:
-       test_animal = entity.predicates[0]
     print "ENTITY "+entity.ID
     pred_list = ""
     for p in entity.predicates:
         pred_list+=p.surface+" "
     print pred_list[:-1]
 
-print "\n\nTrying to find the denotation of test animal:",test_animal.surface
-truth,test_set = true_model.true_interpretation(test_animal)
-
-to_print = (' '.join(e.ID for e in test_set))
-print "\n",test_animal.surface,":",to_print
+print "\n\nTrying to find the denotation of test word:",test_word
+denot = true_model.denotation(test_word)
+print [ d.ID for d in denot ]
