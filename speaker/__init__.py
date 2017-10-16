@@ -15,8 +15,8 @@ class Speaker(object):
         self.vocab = vocab
         self.told = []
         self.heard = []
-        self.distributional_vector_space = distributional_semantics.Space(vocab)
-        self.ideal_vector_space = distributional_semantics.Space(vocab)
+        #self.distributional_vector_space = distributional_semantics.Space(vocab)
+        #self.ideal_vector_space = distributional_semantics.Space(vocab)
 
     def function_words(self,lexicon):
         '''Get function words from lexicon'''
@@ -40,13 +40,13 @@ class Speaker(object):
 
         linguistic_entity = entity.ID+'k' if experienced else entity.ID+'h'
         if linguistic_entity not in self.model.entities:
-            se = distributional_semantics.SparseEntity(linguistic_entity)
+            #se = distributional_semantics.SparseEntity(linguistic_entity)
             #In this simple implementation, we know that cardinality of entities is 1
             se.cardinality = 1
             self.sparse_entities[linguistic_entity] = se
         se = self.sparse_entities[linguistic_entity]
         for predicate in entity.predicates:
-            context = distributional_semantics.Context(se.ID,situation.ID)
+            #context = distributional_semantics.Context(se.ID,situation.ID)
             context.dlfs.append(predicate)
             se.contexts.append(context)
         context_set = []
@@ -99,15 +99,12 @@ class Speaker(object):
          
 
 
-    def tell(self,entity):
-        '''Tell *some* stuff about an entity (in logical forms).
-        Assume some kind of coref (the speaker makes it clear that
-        all sentences are about the same entity.'''
-        words = []
-        for p in entity.predicates:
-            words.append(p.form)
-        sampled_words = random.sample(words, random.randint(1,len(words)))
-        sentences = grammar.generate(sampled_words)
+    def tell(self,model,v):
+        '''Tell stuff about a situation (a submodel).'''
+        sentences = grammar.generate(v.lexicon)
+        for s in sentences:
+            truth, justification = true_model.interpretation_function_S(s, v.lexicon)
+            print s, truth, print_justification(justification)
         return sentences
 
 

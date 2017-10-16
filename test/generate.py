@@ -7,7 +7,7 @@ import random
 import world
 import model
 import grammar
-from utils import read_prob_file, read_world_file, printer
+from utils import read_prob_file, read_world_file, printer, print_justification
 
 np.set_printoptions(suppress=True)
 
@@ -31,7 +31,7 @@ v = grammar.Vocabulary("../grammar/lexicon.txt")
 '''Start of simulation. Create a world.'''
 a_world = world.World()
 #a_world.populate_random("../animal-dataset.txt",5,3)
-a_world.populate_from_file("../sample_world.txt", v.lexicon)
+a_world.populate_from_file(sys.argv[1], v.lexicon)
 
 '''Create a truth-theoretic model corresponding to the world.'''
 true_model = model.Model()
@@ -54,4 +54,5 @@ print sentences
 
 for s in sentences:
     truth, justification = true_model.interpretation_function_S(s, v.lexicon)
-    print s, truth, [e.ID for e in justification]
+    #print s, truth, [e.ID for e in justification]
+    print s, truth, print_justification(justification)

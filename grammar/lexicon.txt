@@ -2,8 +2,10 @@ tree, LEMMA tree, POS N, AGR sg
 trees, LEMMA tree, POS N, AGR pl
 oak, LEMMA oak, POS N, AGR sg
 oaks, LEMMA oak, POS N, AGR pl
-birch, LEMMA birch, POS N, AGR sg
-birches, LEMMA birch, POS N, AGR pl
+beech, LEMMA beech, POS N, AGR sg
+beeches, LEMMA beech, POS N, AGR pl
+elm, LEMMA elm, POS N, AGR sg
+elms, LEMMA elm, POS N, AGR pl
 a, LEMMA a, POS D, AGR sg
 all, LEMMA all, POS D, AGR pl
 is, LEMMA be, POS V, AGR sg

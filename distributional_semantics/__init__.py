@@ -1,28 +1,59 @@
 import numpy as np
+import grammar
 
-class EntitySet(object):
-    '''An set with its contexts, which in principle could be of any cardinality.'''
-    def __init__(self, var_ID):
-        self.ID = var_ID
-        self.cardinality = -1		#cardinality of the set. -1 for unknown
-        self.contexts = []		
+class DLFTuple(object):
+    '''A DLF tuple -- it has an argument and an LF composed of a single elementary predication'''
+    def __init__(self,arg, lf):
+        self.arg = arg
+        self.lf = lf
 
-class Context(object):
-    '''A context set is for one particular situation'''
-    '''In this simple implementation, we only have one logical form per context, but generally dlfs should be a list.'''
-    def __init__(self, args, situation):
-        self.args = args
-        self.situation = situation
+class ContextSet(object):
+    '''A context set comprising several DLFTuple objects'''
+    def __init__(self):
         self.dlfs = []
 
-class Space(object):
+class EntitySpace(object):
 
     def __init__(self, vocab):
-        self.vectors={}
+        dimension = len(vocab.lexicon)
+        self.mat = np.zeros(dimension)
+        self.mat = self.mat.reshape(1,dimension)
+        '''Define rows'''
+        self.eID_to_pos = {}
+        self.pos_to_eID = {}
+        '''Define cols'''
         self.labels_to_pos = vocab.labels_to_pos
         self.pos_to_labels = vocab.pos_to_labels
-        for word_id in self.pos_to_labels:
-            self.vectors[word_id] = np.zeros(len(vocab.lexicon))
+        print "COLUMNS:",self.pos_to_labels
+
+    def update_entity(self,e):
+        if e.ID not in self.eID_to_pos:
+            pos = len(self.eID_to_pos)
+            self.eID_to_pos[e.ID] = pos
+            self.pos_to_eID[pos] = e.ID
+            self.mat = np.vstack([self.mat,np.zeros(len(self.mat[0]))])
+        self.pred_to_vec(e)
+        print e.ID,self.mat[self.eID_to_pos[e.ID]]
+
+    def pred_to_vec(self,e):
+        for predicate in e.predicates:
+            p = predicate.surface
+            self.mat[self.eID_to_pos[e.ID]][self.labels_to_pos[p]] = 1
+
+    def denotation(self,predicates):
+        '''TODO: does it make sense to have a 'distributional' denotation?'''
+        return 0
+
+
+class WordSpace(object):
+
+    def __init__(self, vocab):
+        '''Make square matrix, labels are the entire vocabulary.'''
+        dimension = len(vocab.lexicon)
+        self.mat = np.zeros((dimension,dimension))
+        self.labels_to_pos = vocab.labels_to_pos
+        self.pos_to_labels = vocab.pos_to_labels
+        print "LABELS:",self.pos_to_labels
 
     def get_predicates(self,vector):
         '''Return the predicates corresponding to non-zero items in vector.'''
@@ -32,11 +63,49 @@ class Space(object):
                 predicates.append(self.pos_to_labels[i])
         return predicates
 
-    def update_kinds(self, entity):
-        print entity.ID
-        if entity.ID in self.vectors:
-            predicates = self.get_predicates(self.vectors[entity.ID])
-	    print predicates
+    def update_word_vectors(self, entity_space):
+        for i in range(entity_space.mat.shape[0]):
+            entity_vector  = entity_space.mat[i]
+            predicates = self.get_predicates(entity_vector)
+            print predicates
+	    for p1 in predicates:
+                for p2 in predicates:
+                    if p1 != p2:
+                        self.mat[self.labels_to_pos[p1]][self.labels_to_pos[p2]]+=1
+
+class IdealWords(object):
+
+    def __init__(self, lexicon):
+        '''Make context sets for ideal word representations.'''
+        self.context_sets = {}
+        for k,v in lexicon.items():
+            if v.lemma not in self.context_sets:
+                self.context_sets[v.lemma] = []
+
+    def get_occurrences(self, LF, justification):
+        '''Get co-occurrences from a sentence LF and add to context set.'''
+        entities = [e for entity_set in justification for e in entity_set]
+        predicates = []
+        constituents = LF.daughters
+        while len(constituents) > 0:
+            daughter_constituents = []
+            for c in constituents:
+                if isinstance(c,grammar.FS_rule):
+                    for d in c.daughters:
+                        daughter_constituents.append(d)
+                else:
+                    if c.pos != 'D':
+                        predicates.append(c.lemma)
+            constituents = daughter_constituents
+        for i in range(len(predicates)-1):
+            for j in range(i+1,len(predicates)):
+                for e in entities:
+                    if [e.ID,predicates[j]] not in self.context_sets[predicates[i]]:
+                        self.context_sets[predicates[i]].append([e.ID,predicates[j]])
+                    if [e.ID,predicates[i]] not in self.context_sets[predicates[j]]:
+                        self.context_sets[predicates[j]].append([e.ID,predicates[i]])
+
+ 
     
 
 def linalg(mat_heard,mat_known):

@@ -13,6 +13,7 @@ def mk_variable(typ):
     var = typ+str(randint(1,100))+'l'
     while var in variables_in_use:
         var = typ+str(randint(1,100))+'l'
+    variables_in_use.append(var)
     return var
     
 
@@ -101,7 +102,7 @@ class Det(FS):
         self.lemma = lemma
         self.pos = 'D'
         self.agr = agr
-        self.arg0 = mk_variable('x')
+        self.arg0 = None
         self.arg1 = None
         self.arg2 = None
 
@@ -113,7 +114,7 @@ class Noun(FS):
         self.lemma = lemma
         self.pos = 'N'
         self.agr = agr
-        self.arg0 = mk_variable('x')
+        self.arg0 = None
 
 class Adj(FS):
 
@@ -122,7 +123,7 @@ class Adj(FS):
         self.surface = surface
         self.lemma = lemma
         self.pos = 'J'
-        self.arg0 = mk_variable('x')
+        self.arg0 = None
         self.arg1 = None
 
 class Verb(FS):
@@ -133,7 +134,7 @@ class Verb(FS):
         self.lemma = lemma
         self.pos = 'V'
         self.agr = agr
-        self.arg0 = mk_variable('e')
+        self.arg0 = None
         self.arg1 = None
 
 class NP(FS_rule):
@@ -149,6 +150,7 @@ class NP(FS_rule):
                 self.daughters = []
                 self.daughters.append(det)
                 self.daughters.append(noun)
+                det.arg0 = mk_variable('x')
                 self.daughters[1].arg0 = det.arg0
                 det.arg1 = self.daughters[1].arg0
                 self.arg0 = det.arg0
@@ -167,6 +169,7 @@ class VP(FS_rule):
             self.daughters = []
             #self.daughters.append(copula)
             self.daughters.append(adj)
+            adj.arg0 = mk_variable('x')
             self.arg0 = adj.arg0
             self.success = True
             #print "Well-formed VP: %s." % self.surface
@@ -210,7 +213,7 @@ def generate(lexicon):
                     if fs.success and fs.surface not in [ f.surface for f in stack ]:
                         stack.append(fs)
                         if fs.pos == 'S':
-                            sentences.append(fs.surface) 
+                            sentences.append(fs) 
         if len(stack) == stack_size:
             break
         else:
@@ -245,10 +248,10 @@ def parse_sentence(sentence, lexicon):
                     shift_or_reduce = True
     if len(stack) > 1:
         print "Parse failed."
-    else:
-        '''stack[0] is a sentence'''
-        #print "PARSE:", stack[0].daughters
-        print_LF(stack[0])
+    #else:
+    #    '''stack[0] is a sentence'''
+        #print "Parse succeeded"
+        #print_LF(stack[0])
     return stack[0]
             
 def print_LF(parse):
@@ -265,5 +268,5 @@ def print_LF(parse):
             else:
                 lf+=c.surface+"("+c.arg0+") "
         constituents = daughter_constituents
-    print lf
-   
+    print "PRINTING LF:",lf
+    return lf

@@ -8,7 +8,7 @@ import world
 import model
 import grammar
 import speaker
-from utils import read_prob_file, read_world_file, printer
+from utils import read_prob_file, read_world_file, printer, print_justification
 
 np.set_printoptions(suppress=True)
 
@@ -31,8 +31,7 @@ v = grammar.Vocabulary("../grammar/lexicon.txt")
 
 '''Start of simulation. Create a world.'''
 a_world = world.World()
-#a_world.populate_random("../animal-dataset.txt",15,3)
-a_world.populate_from_file("../sample_world.txt", v.lexicon)
+a_world.populate_from_file(sys.argv[1], v.lexicon)
 
 '''Create a truth-theoretic model corresponding to the world.'''
 true_model = model.Model()
@@ -59,10 +58,9 @@ for entity in god1.model.entities:
         words[p.surface] = v.lexicon[p.surface]
     sentences = grammar.generate(words)
     for s in sentences:
-        print "\nVishnu says about",entity.ID,":",s
+        print "\nVishnu says about",entity.ID,":",s.surface
 
         '''Sanity check. Is it really true?'''
-        truth, justification = god2.model.interpretation_function_S(s,v.lexicon)
+        truth, justification = god2.model.interpretation_function_S(s.surface,v.lexicon)
         print "Artemis thinks this sentence is",truth
-        for e in justification:
-            print e.ID
+        print print_justification(justification)

@@ -44,12 +44,12 @@ class Model(object):
             s = Situation(scene)
 	    self.situations.append(s)
 
-    def mk_speaker_model(self, world, num_entities, name):
+    def mk_speaker_model(self, world, lexicon, num_entities, name):
 	'''In this setup, the model is initialised with a random set of
         experiences for the speaker.'''
         things = random.sample(world.things,num_entities)
         for thing in things:
-            e = Entity(thing)
+            e = Entity(thing, lexicon)
             e.ID = e.ID+"_"+name	#Distinguish IDs for different speakers
 	    self.entities.append(e)
         #TODO: sort out situations
@@ -60,21 +60,22 @@ class Model(object):
         truth-value (proposition).'''
 
         truth_value = False
-        justification = []
+        justification = [[], [], []]
         parse = grammar.parse_sentence(s, lexicon)
         if isinstance(parse,grammar.S):
             NP = parse.daughters[0]
             VP = parse.daughters[1]
             np_sets = self.interpretation_function_NP(NP)
+            justification[1] = np_sets
             #print "NP DENOTATION:",np_sets
             vp_set = self.interpretation_function_VP(VP)
+            justification[2] = vp_set
             #print "VP DENOTATION:",vp_set
             for s in np_sets:
                 intersect = list(set(s).intersection(set(vp_set))) 
-                if len(intersect) > 0:
+                if len(intersect) == len(s):
                     truth_value =True
-                    for e in intersect:
-                        justification.append(e)
+                    justification[0].append(intersect)
         return truth_value, justification
 
     def interpretation_function_NP(self, np):
@@ -114,7 +115,7 @@ class Model(object):
         for entity in self.entities:
             for predicate in entity.predicates:
                 if predicate.surface == word: 
-                    #print "Match:",entity.ID
+                    #print "Match:",entity.ID,word
                     denotation.append(entity)
         return set(denotation)
         
@@ -126,5 +127,5 @@ class Model(object):
             print "ENTITY "+entity.ID
             pred_list = ""
             for p in entity.predicates:
-                pred_list+=p.form+" "
+                pred_list+=p.surface+" "
             print pred_list[:-1]

@@ -8,7 +8,7 @@ import world
 import model
 import grammar
 import speaker
-from utils import read_prob_file, read_world_file, printer
+from utils import read_prob_file, read_world_file, printer, print_justification
 
 np.set_printoptions(suppress=True)
 
@@ -27,31 +27,32 @@ for f in os.listdir(folder):
     except Exception as e:
         print(e)
 
+v = grammar.Vocabulary("../grammar/lexicon.txt")
 
-'''Start of simulation. Create a world.'''
+'''Start of simulation. Create a world and let's assume this is
+the real world.'''
 real_world = world.World()
-#real_world.populate_random("../animal-dataset.txt",50,30)
-vocab = a_world.populate_from_file("../sample_world.txt")
+real_world.populate_from_file(sys.argv[1], v.lexicon)
 
 
 '''Let's share the vocab between speakers for now.'''
 #kinds, vocab = read_prob_file("../animal-dataset.txt")
 
 '''Make S1'''
-print "Making speaker S1..."
+print "\nMaking speaker S1..."
 m1 = model.Model()
-m1.mk_speaker_model(real_world,30,"1")
+m1.mk_speaker_model(real_world,v.lexicon,5,"1")
 m1.print_me()
-S1 = speaker.Speaker("Kim",vocab,m1)
+S1 = speaker.Speaker("Kim",v,m1)
 
 '''Make S2'''
-print "Making speaker S2..."
+print "\nMaking speaker S2..."
 m2 = model.Model()
-m2.mk_speaker_model(real_world,30,"2")
+m2.mk_speaker_model(real_world,v.lexicon,2,"2")
 m2.print_me()
-S2 = speaker.Speaker("Sandy",vocab,m2)
+S2 = speaker.Speaker("Sandy",v,m2)
 
-print "\n\nSpeaker overlap (the instances that both speakers know about)...\n\n"
+print "\nSpeaker overlap (the instances that both speakers know about)...\n"
 s1_e=[]
 for e in S1.model.entities:
     s1_e.append(e.IDg)
@@ -61,13 +62,11 @@ for e in S2.model.entities:
 print set(s1_e).intersection(set(s2_e))
 
 '''Refer: generate sentences about the actual entities of the domain.'''
-for entity in S1.model.entities:
-    sentences = S1.tell(entity)
+    sentences = S1.tell(entity, v)
     for s in sentences:
         print "S1 says about",entity.ID,":",s
 
         '''S2 checks. Is it really true?'''
-        truth, denotation = S2.model.true_interpretation(s)
+        truth, justification = S2.model.interpretation_function_S(s,v.lexicon)
         print "S2 thinks this sentence is",truth
-        for e in denotation:
-            print e.ID
+        print print_justification(justification)

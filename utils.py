@@ -141,3 +141,14 @@ def binarise(matrix):
       else: 
         matrix[i][j] = 1
   return matrix
+
+def print_justification(justification):
+    justification_print = "JUSTIFICATION: "
+    for i in justification[0]:
+        justification_print+=str([e.ID for e in i])
+    justification_print+=" NP:"
+    for i in justification[1]:
+        justification_print+=str([e.ID for e in i])
+    justification_print+=" VP:"
+    justification_print+=str([e.ID for e in justification[2]])
+    return justification_print
