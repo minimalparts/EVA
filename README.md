@@ -15,4 +15,4 @@ Gather all the stats we'll need for building the matrices:
 
 The following matrices will be produced: entity matrix, predicate matrix, probabilistic version of the predicate matrix. Run:
 
-   python3 mk\_scottish\_space.py 
+    python3 mk\_scottish\_space.py 
