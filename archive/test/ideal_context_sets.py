@@ -57,4 +57,9 @@ for s in sentences:
         print s.surface
         IW.get_occurrences(s,justification[0])
 
+print "Context sets for this world..."
 print IW.context_sets
+
+print "Corresponding matrix..."
+WS = distributional_semantics.WordSpace(v,IW.context_sets)
+

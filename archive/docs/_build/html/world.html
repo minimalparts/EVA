@@ -1,0 +1,146 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>The world module &mdash; IdealWords 0.9 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.9',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="IdealWords 0.9 documentation" href="index.html" />
+    <link rel="next" title="The distributional semantics module" href="distributional_semantics.html" />
+    <link rel="prev" title="The speaker module" href="speaker.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-world">
+<span id="the-world-module"></span><h1>The world module<a class="headerlink" href="#module-world" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="world.Scene">
+<em class="property">class </em><code class="descclassname">world.</code><code class="descname">Scene</code><span class="sig-paren">(</span><em>ID</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/world.html#Scene"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#world.Scene" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>A scene has an ID and involves a number of things.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="world.Thing">
+<em class="property">class </em><code class="descclassname">world.</code><code class="descname">Thing</code><span class="sig-paren">(</span><em>ID</em>, <em>attributes</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/world.html#Thing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#world.Thing" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>A thing has an ID (a string variable), a kind (a string) and
+some information about which attributes it has, and in which scenes
+it occurs.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="world.World">
+<em class="property">class </em><code class="descclassname">world.</code><code class="descname">World</code><span class="sig-paren">(</span><em>probability_file</em>, <em>num_entities</em>, <em>num_scenes</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/world.html#World"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#world.World" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>The following are utility functions to generate a world.</p>
+<dl class="method">
+<dt id="world.World.check_incompatibilities">
+<code class="descname">check_incompatibilities</code><span class="sig-paren">(</span><em>thing</em>, <em>attribute</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/world.html#World.check_incompatibilities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#world.World.check_incompatibilities" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="world.World.sample_scene">
+<code class="descname">sample_scene</code><span class="sig-paren">(</span><em>ID</em>, <em>things</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/world.html#World.sample_scene"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#world.World.sample_scene" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="world.World.sample_thing">
+<code class="descname">sample_thing</code><span class="sig-paren">(</span><em>ID</em>, <em>kinds</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/world.html#World.sample_thing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#world.World.sample_thing" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="world.World.scenes">
+<code class="descname">scenes</code><em class="property"> = None</em><a class="headerlink" href="#world.World.scenes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Record probability data to generate the world</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="speaker.html" title="previous chapter">The speaker module</a></li>
+      <li>Next: <a href="distributional_semantics.html" title="next chapter">The distributional semantics module</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/world.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Aurelie Herbelot.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/world.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
