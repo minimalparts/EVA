@@ -3,6 +3,7 @@ sys.path.append('..')
 import utils
 from scipy.stats import spearmanr
 
+#This could be done better... which rows of the matrix should we choose? Just WN? Just first sense? Etc.
 dm_dict = utils.readDM(sys.argv[1])
 system = []
 gold = []

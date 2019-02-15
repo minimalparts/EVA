@@ -6,6 +6,7 @@ def record_entities():
     with open("data/ideallanguage.txt") as f:
         lines = f.read().splitlines()
     synsets = []
+    entities = {}
     out = open("data/entities.txt",'w')
     eid = ''
     for l in lines:
@@ -19,11 +20,13 @@ def record_entities():
                 synset = m.group(1)
                 out.write('%s %s\n' %(eid,synset))
                 synsets.append(synset)
+                entities[eid] = synset
     out.close()
     counts = Counter(synsets)
     with open('data/synset_freqs.txt', 'w', encoding='utf-8') as w:
         for pair in counts.most_common():
             w.write(pair[0] + '\t' + str(pair[1]) + '\n')
+    return entities
 
 def record_attributes():
     print("Building attribute frequencies...")
@@ -41,21 +44,23 @@ def record_attributes():
         for pair in counts.most_common():
             w.write(pair[0] + '\t' + str(pair[1]) + '\n')
 
-def record_relations():
+def record_relations(entities):
     print("Building relation frequencies...")
     with open("data/ideallanguage.txt") as f:
         lines = f.read().splitlines()
     relations = []
     for l in lines:
-        m = re.search('(\S*)\([0-9]*,[0-9]*\)',l)
+        m = re.search('(\S*)\(([0-9]*),([0-9]*)\)',l)
         if m:
-            relation = m.group(1)
-            relations.append(relation)
+            relation1 = m.group(1)+'(-,'+entities[m.group(3)]+')'
+            relation2 = m.group(1)+'('+entities[m.group(2)]+',-)'
+            relations.append(relation1)
+            relations.append(relation2)
     counts = Counter(relations)
     with open('data/relation_freqs.txt', 'w', encoding='utf-8') as w:
         for pair in counts.most_common():
             w.write(pair[0] + '\t' + str(pair[1]) + '\n')
 
-record_entities()
+entities = record_entities()
 record_attributes()
-record_relations()
+record_relations(entities)

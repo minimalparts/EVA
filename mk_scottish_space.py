@@ -1,7 +1,7 @@
 import re
 import numpy as np
 
-minfreq = 50	#Min frequency of predicates 
+minfreq = 100	#Min frequency of predicates 
 
 def read_entities():
     entities = {}
@@ -31,24 +31,22 @@ def make_predicates():
     predicate_count = 0
     i_to_predicates = {}
     predicates_to_i = {}
-    
-    with open("data/synset_freqs.txt") as f:
-        lines = f.read().splitlines()
-    for pair in lines:
-        att,freq = pair.split('\t')
-        if int(freq) > minfreq:
-            i_to_predicates[predicate_count] = att
-            predicates_to_i[att] = predicate_count
-            predicate_count+=1
 
-    with open("data/attribute_freqs.txt") as f:
-        lines = f.read().splitlines()
-    for pair in lines:
-        att,freq = pair.split('\t')
-        if int(freq) > minfreq:
-            i_to_predicates[predicate_count] = att
-            predicates_to_i[att] = predicate_count
-            predicate_count+=1
+    def record_predicates(filename, predicate_count):
+        with open(filename) as f:
+            lines = f.read().splitlines()
+        for pair in lines:
+            pred,freq = pair.split('\t')
+            if int(freq) > minfreq:
+                i_to_predicates[predicate_count] = pred
+                predicates_to_i[pred] = predicate_count
+                predicate_count+=1
+        return predicate_count
+
+    predicate_count = record_predicates("data/synset_freqs.txt", predicate_count)
+    predicate_count = record_predicates("data/attribute_freqs.txt", predicate_count)
+    record_predicates("data/relation_freqs.txt", predicate_count)
+    #print(i_to_predicates)
     return i_to_predicates, predicates_to_i
 
 
@@ -97,7 +95,8 @@ for l in lines:
                     entity_matrix[synset].append(eid)
                 else:
                     entity_matrix[synset] = [eid]
-                inverse_entity_matrix[eid].append(synset)
+                if synset not in inverse_entity_matrix[eid]:
+                    inverse_entity_matrix[eid].append(synset)
     if ".n." not in l:
         m = re.search('(\S*)\(([0-9]*)\)',l)
         if m and m.group(2) == eid:
@@ -107,9 +106,26 @@ for l in lines:
                     entity_matrix[att].append(eid)
                 else:
                     entity_matrix[att] = [eid]
-                inverse_entity_matrix[eid].append(att)
+                if att not in inverse_entity_matrix[eid]:
+                    inverse_entity_matrix[eid].append(att)
+        
+        m = re.search('(\S*)\(([0-9]*),([0-9]*)\)',l)
+        if m:
+            if m.group(2) == eid:
+                relation = m.group(1)+'(-,'+entities[m.group(3)]+')'
+            if m.group(3) == eid:
+                relation = m.group(1)+'('+entities[m.group(2)]+',-)'
+            if relation in predicates_to_i:
+                if relation in entity_matrix:
+                    entity_matrix[relation].append(eid)
+                else:
+                    entity_matrix[relation] = [eid]
+                if relation not in inverse_entity_matrix[eid]:
+                    inverse_entity_matrix[eid].append(relation)
+                
 
 write_dictionary(entity_matrix,"spaces/entity_matrix.dm")
+write_dictionary(inverse_entity_matrix, "spaces/inverse_entity_matrix.dm")
 
 predicate_matrix = aggregation(entity_matrix,inverse_entity_matrix, predicates_to_i)
 write_numpy_matrix(predicate_matrix, i_to_predicates, "spaces/predicate_matrix.dm")
