@@ -29,7 +29,7 @@ def extract_objects(filepath):
                 objects = obj['synsets']
                 objects_id = obj['object_id']
                 for obj in objects:
-                    #print('%s(%s)' %(obj,objects_id))
+                    print('%s(%s)' %(obj,objects_id))
                     pair = (obj,objects_id)
                     situations[im_id].append(pair)
                     all_objects[objects_id] = objects

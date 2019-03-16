@@ -1,5 +1,8 @@
 '''Implements the extraction function X_M and the aggregation function A_M'''
 
+import sys
+sys.path.append('./utils/')
+
 import re
 import numpy as np
 from utils import read_entities, write_dictionary, write_numpy_matrix
@@ -31,7 +34,7 @@ def make_predicates():
 
 
 def aggregation(entity_matrix, inverse_entity_matrix, predicates_to_i):
-'''This is the aggregation function A_M'''
+    '''This is the aggregation function A_M'''
     size = len(entity_matrix.keys())
     predicate_matrix = np.zeros((size,size))
     for pred,entities in entity_matrix.items():
@@ -66,7 +69,10 @@ for l in lines:
         m = re.search('entity id=(.*)>',l)
         if m:
             eid = m.group(1)
-            inverse_entity_matrix[eid] = []
+            if eid not in inverse_entity_matrix:	#The VS json file sometimes has two unrelated synsets under one ID: see entity 605310 for an example
+                inverse_entity_matrix[eid] = []
+            else:
+                continue
     if ".n." in l:
         m = re.search('(\S*\.n\.[0-9]*)\(([0-9]*)\)',l)
         if m.group(2) == eid:

@@ -27,6 +27,19 @@ def read_predicate_matrix():
     m = np.array(vectors)
     return vocab, m
 
+def read_probabilistic_matrix():
+    vocab = []
+    vectors = []
+    with open(base+"/spaces/probabilistic_matrix.dm") as f:
+        dmlines=f.read().splitlines()
+    for l in dmlines:
+        items=l.split()
+        target = items[0]
+        vocab.append(target)
+        vec=[float(i) for i in items[1:]] 	#list of lists	
+        vectors.append(vec)
+    m = np.array(vectors)
+    return vocab, m
 
 def read_entity_matrix():
     p_entities = {}
@@ -72,6 +85,18 @@ def read_vocab():
         p_to_i[p] = int(i)
     return i_to_p,p_to_i
 
+def read_nearest_neighbours():
+    neighbours = {}
+    with open(base+"/data/neighbours.txt") as f:
+        lines = f.read().splitlines()
+    for line in lines:
+        fields = line.split()
+        predicate = fields[0]
+        n = [p for i,p in enumerate(fields[1:]) if i % 2 == 0]
+        neighbours[predicate] = n
+    return neighbours
+
+
 def find_predicate_entities(pred):
     entities = []
     with open(base+"/spaces/entity_matrix.dm") as f:
@@ -84,6 +109,31 @@ def find_predicate_entities(pred):
             break
     return entities
 
+def mk_entity_vectors(entities, inverse_entity_matrix, predicates_to_i):
+    size = len(predicates_to_i.keys())
+    entity_vectors = []
+    entity_ids = []
+    for e in entities:
+        ev = np.zeros(size)
+        e_preds = inverse_entity_matrix[e]
+        for e_pred in e_preds:
+            ev[predicates_to_i[e_pred]]=1
+        entity_vectors.append(ev)
+        entity_ids.append(e)
+    return entity_ids, entity_vectors
+
+def mk_full_predicate_vectors(entity_matrix, entity_list):
+    size = len(entity_list)
+    print("SIZE",size)
+    predicate_vectors = {}
+    for p in entity_matrix.keys():
+        print(p)
+        pv = np.zeros(size)
+        p_ents = entity_matrix[p]
+        for p_ent in p_ents:
+            pv[entity_list.index(p_ent)]=1
+        predicate_vectors[p] = pv
+    return predicate_vectors
 
 def write_dictionary(m,filename):
     f = open(filename,'w',encoding='utf-8')
@@ -96,7 +146,7 @@ def write_numpy_matrix(m,i_to_predicates,filename):
     f = open(filename,'w',encoding='utf-8')
     for i,p in i_to_predicates.items():
        row = p
-       v_string = ' '.join([str(val) for val in m[i]])
+       v_string = ' '.join([str(round(val,5)) for val in m[i]])
        f.write('%s %s\n' %(p,v_string))
     f.close()
 
