@@ -5,7 +5,7 @@ from collections import Counter
 import itertools
 import random
 
-print("Reading probabilistic matrix...")
+print("Reading probabilistic matrix... Please be patient...")
 vocab, pm = read_probabilistic_matrix()
 print("Reading nearest neighbour file for smoothing...")
 neighbours = read_nearest_neighbours()
@@ -86,9 +86,10 @@ while True:
         for w in p[1:]:
             prob = prob * probs[current][w]
             current = w
-        print(p,prob)
+        #print(p,prob)
         chain_probs.append(prob)
     random_utterances[utterance] = max(chain_probs)
+    print(utterance,random_utterances[utterance])
 
 for u in sorted(random_utterances, key=random_utterances.get, reverse=True):
   print(random_utterances[u],u)
