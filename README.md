@@ -79,6 +79,8 @@ Run from the *lexsel* directory. To retrieve antonyms from the Visual Genome, do
 
     python3 antonymy.py
 
+This will print a long list ranked by word pair similarity. Note that due to the nature of the Visual Genome, many of the pairs are more items that are 'incompatible' than in a strict antonymy relation.
+
 
 To run an example of polysemy clustering, do:
 
