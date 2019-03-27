@@ -32,10 +32,11 @@ def read_predicate_matrix(subspace,ppmi=False):
     m = np.array(vectors)
     return vocab, m
 
-def read_probabilistic_matrix():
+def read_probabilistic_matrix(subspace):
     vocab = []
     vectors = []
-    with open(base+"/spaces/probabilistic_matrix.dm") as f:
+    loc = base+"/spaces/"+subspace+"/probabilistic_matrix.dm"
+    with open(loc) as f:
         dmlines=f.read().splitlines()
     for l in dmlines:
         items=l.split()
@@ -68,9 +69,13 @@ def read_inverse_entity_matrix():
         e_predicates[e] = predicates
     return e_predicates
 
-def read_cosines():
+def read_cosines(subspace,ppmi=False):
     p_cosines = {}
-    with open(base+"/data/cosines.txt") as f:
+    if ppmi:
+        filename = base+"/data/"+subspace+"/cosines_ppmi.txt"
+    else:
+        filename = base+"/data/"+subspace+"/cosines.txt"
+    with open(filename) as f:
         lines = f.read().splitlines()
     for l in lines:
         items = l.split()
@@ -90,14 +95,14 @@ def read_vocab():
         p_to_i[p] = int(i)
     return i_to_p,p_to_i
 
-def read_nearest_neighbours(typ):
-    '''typ is: synsets, relations, atts'''
-    if typ == "synsets":
-        fnns = base+"/data/synsets_nns.txt"
-    elif typ == "relations":
-        fnns = base+"/data/relationss_nns.txt"
-    elif typ == "atts":
-        fnns = base+"/data/attributes_nns.txt"
+def read_nearest_neighbours(subspace,typ):
+    '''typ is: syn, rel, att'''
+    if typ == "syn":
+        fnns = base+"/data/"+subspace+"/syn_nns.txt"
+    elif typ == "rel":
+        fnns = base+"/data/"+subspace+"/rel_nns.txt"
+    elif typ == "att":
+        fnns = base+"/data/"+subspace+"att_nns.txt"
     neighbours = {}
     with open(fnns) as f:
         lines = f.read().splitlines()
@@ -174,37 +179,32 @@ def write_cosines(words, cosines ,filename):
     f.close()
 
 def compute_nearest_neighbours(cosines,words):
-    f1 = open(base+"/data/synsets_nns.txt",'w',encoding='utf-8')
-    f2 = open(base+"/data/attributes_nns.txt",'w',encoding='utf-8')
-    f3 = open(base+"/data/relations_nns.txt",'w',encoding='utf-8')
+    syn_nns = {}
+    att_nns = {}
+    rel_nns = {}
     word_indices = {i:w for i,w in enumerate(words)}
     for word in words:
         word_cos = np.array(cosines[word])
         ranking = np.argsort(-word_cos)
-        if ".n." in word and "(" not in word:
-            neighbours = [word_indices[n]+" ("+str(round(word_cos[n],5))+")" for n in ranking if ".n." in word_indices[n] and "(" not in word_indices[n]][:50]
-            f1.write('%s %s\n' %(word,' '.join([n for n in neighbours])))
-        if ".n." not in word and "(" not in word:
-            neighbours = [word_indices[n]+" ("+str(round(word_cos[n],5))+")" for n in ranking if ".n." not in word_indices[n] and "(" not in word_indices[n]][:50]
-            f2.write('%s %s\n' %(word,' '.join([n for n in neighbours])))
+        if ".n" in word and "(" not in word:
+            neighbours = [word_indices[n]+" ("+str(round(word_cos[n],5))+")" for n in ranking if ".n" in word_indices[n] and "(" not in word_indices[n]][:50]
+            syn_nns[word] = neighbours
+        if ".n" not in word and "(" not in word:
+            neighbours = [word_indices[n]+" ("+str(round(word_cos[n],5))+")" for n in ranking if ".n" not in word_indices[n] and "(" not in word_indices[n]][:50]
+            att_nns[word] = neighbours
         if "(" in word:
             neighbours = [word_indices[n]+" ("+str(round(word_cos[n],5))+")" for n in ranking if "(" in word_indices[n]][:50]
-            f3.write('%s %s\n' %(word,' '.join([n for n in neighbours])))
-    f1.close()
-    f2.close()
-    f3.close()
+            rel_nns[word] = neighbours
+    return syn_nns,att_nns,rel_nns
 
-def write_nearest_neighbours(cosines,words,filename):
-    f = open(filename,'w',encoding='utf-8')
-    word_indices = {}
-    for i, val in enumerate(words):
-        word_indices[i] = val
-    for i in range(cosines.shape[0]):
-        maxima = np.argsort(-cosines[i])[:10]
-        neighbours = [word_indices[n]+" ("+str(round(cosines[i][n],5))+")" for n in maxima]
-        f.write('%s %s\n' %(words[i],' '.join([n for n in neighbours])))
+def write_nearest_neighbours(neighbours_dic,wordtype,subspace,ppmi=False):
+    if ppmi:
+        f = open(base+"/data/"+subspace+"/"+wordtype+"_nns_ppmi.txt",'w',encoding='utf-8')
+    else:
+        f = open(base+"/data/"+subspace+"/"+wordtype+"_nns.txt",'w',encoding='utf-8')
+    for word,neighbours in neighbours_dic.items():
+            f.write('%s %s\n' %(word,' '.join([n for n in neighbours])))
     f.close()
-            
 
 def write_vocabulary(words, filename):
     f = open(filename,'w',encoding='utf-8')

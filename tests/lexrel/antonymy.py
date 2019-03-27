@@ -49,6 +49,7 @@ for pair in candidate_antonyms:
         if set([pair[0],pair[1]]).issubset(attributes):
             items_to_remove.append(pair)
             break
+           
 
 final_candidate_antonyms = [ p for p in candidate_antonyms if p not in items_to_remove ]
 

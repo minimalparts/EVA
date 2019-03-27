@@ -14,13 +14,8 @@ neighbours = read_nearest_neighbours()
 
 utterance = "START"
 
-def compute_priors():
-    total = sum([len(v) for p,v in predicates.items() ])
-    priors = {}
-    for p,v in predicates.items():
-        priors[p] = len(v) / total
-        #print(p,priors[p])
-    return priors
+def read_dataset():
+    
 
 def mk_random_utterance():
     nouns = [ n for n in vocab if "n.0" in n and '(' not in n ]
@@ -28,6 +23,15 @@ def mk_random_utterance():
     utterance = ' '.join([w for w in random.sample(atts,2)])
     noun = random.sample(nouns,1)[0]
     return utterance+' '+noun
+
+
+def compute_priors():
+    total = sum([len(v) for p,v in predicates.items() ])
+    priors = {}
+    for p,v in predicates.items():
+        priors[p] = len(v) / total
+        #print(p,priors[p])
+    return priors
 
 def smooth(word,dimension):
     nns =  neighbours[word]

@@ -47,6 +47,18 @@ For each entity, the predicates applicable to that entity are shown. E.g.
     3132144 hand.n.01 of(-,guy.n.01)
 
 
+## Evaluate spaces on MEN and SimLex-999
+
+Spaces can be evaluated on the standard relatedness and similarity test sets MEN and SimLex-999. To do so, go to *tests/MEN* or *tests/SimLex* and run:
+
+    python3 spearman.py
+
+It is possible to choose the space that is evaluated by using the flags *--att* and *--rel* (to include attribute and relations dimensions). Adding the flag *--ppmi* will run on the PPMI version of the predicate matrix. So for example:
+
+    python3 spearman.py --rel --ppmi
+
+would run on a space with relation dimensions, PPMI-reduced.
+
 
 ## Generate standard similarity measures
 
@@ -55,6 +67,7 @@ To obtain standard similarity and nearest neighbours information on the created 
     python3 similarity.py
 
 Warning: the pairwise cosine computation takes a little while. All similarity files will be stored in the *data/* directory.
+
 
 
 ## Play with the spaces

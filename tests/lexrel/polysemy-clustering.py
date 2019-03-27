@@ -1,6 +1,6 @@
 import sys
 sys.path.append('../../utils/')
-from utils import find_predicate_entities, read_inverse_entity_matrix, read_predicate_matrix
+from utils import find_predicate_entities, read_inverse_entity_matrix, read_predicate_matrix, mk_entity_vectors
 from sklearn.cluster import DBSCAN
 #from sklearn.cluster import KMeans
 from collections import Counter
@@ -11,21 +11,7 @@ predicate = sys.argv[1]
 threshold = int(sys.argv[2])    #This is the number of predicates an entity must have to be turned into a vector
 
 
-def mk_entity_vectors(entities, inverse_entity_matrix, predicates_to_i):
-    size = len(predicates_to_i.keys())
-    entity_vectors = []
-    entity_ids = []
-    for e in entities:
-        ev = np.zeros(size)
-        e_preds = inverse_entity_matrix[e]
-        if len(e_preds) > threshold:
-            #print(e_preds)
-            for e_pred in e_preds:
-                ev[predicates_to_i[e_pred]]=1
-            entity_vectors.append(ev)
-            entity_ids.append(e)
-    return entity_ids, entity_vectors
-
+print("Reading predicate and entity matrices... Please be patient...")
 vocab, predicate_matrix = read_predicate_matrix()
 inverse_entity_matrix = read_inverse_entity_matrix()
 entities = find_predicate_entities(predicate)
