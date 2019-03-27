@@ -1,9 +1,36 @@
+"""Ideal words
+
+Usage:
+  extract.py [--att] [--rel]
+  extract.py (-h | --help)
+  extract.py --version
+
+Options:
+  -h --help     Show this screen.
+  --version     Show version.
+  --att         Process attributes.
+  --rel         Process relations.
+
+"""
+
 import csv
 import sys
 sys.path.append('../../../utils/')
+from docopt import docopt
 from utils import read_vocab
 
-i_to_p,p_to_i = read_vocab()
+basedir = "syn"
+
+if __name__ == '__main__':
+    args = docopt(__doc__, version='Ideal Words 0.1')
+    if args["--att"] and not args["--rel"]:
+        basedir = "synatt"
+    if not args["--att"] and args["--rel"]:
+        basedir = "synrel"
+    if args["--att"] and args["--rel"]:
+        basedir = "synattrel"
+
+i_to_p,p_to_i = read_vocab(basedir)
 
 out = open('in_vg_compatibility.txt','w')
 

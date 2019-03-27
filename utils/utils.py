@@ -84,10 +84,11 @@ def read_cosines(subspace,ppmi=False):
         p_cosines[p] = vec
     return p_cosines
 
-def read_vocab():
+def read_vocab(subspace):
     i_to_p = {}
     p_to_i = {}
-    with open(base+"/data/vocab.txt") as f:
+    filename = base+"/data/"+subspace+"/vocab.txt"
+    with open(filename) as f:
         lines = f.read().splitlines()
     for line in lines:
         i,p = line.split()
