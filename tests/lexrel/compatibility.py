@@ -58,7 +58,8 @@ def common_properties(word1,word2):
     v1 = pm[vocab.index(word1)]
     v2 = pm[vocab.index(word2)]
     for d in range(len(v1)):
-        if "has(" in vocab[d] and v1[d] > 0.0 + v2[d] > 0.0:
+        #if "has(" in vocab[d] and v1[d] > 0.0 + v2[d] > 0.0:
+        if v1[d] > 0.0 + v2[d] > 0.0:
             #print(word1,word2,vocab[d],v1[d],v2[d])
             common_properties.append(vocab[d])
             scores.append(cosines[word1][d])

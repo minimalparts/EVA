@@ -13,6 +13,20 @@ def read_entities():
         entities[eid] = etype
     return entities
 
+def read_external_vectors(vector_file):
+    vocab = []
+    vectors = []
+    with open(vector_file) as f:
+        dmlines=f.read().splitlines()
+    for l in dmlines:
+        items=l.split()
+        target = items[0]
+        vocab.append(target)
+        vec=[float(i) for i in items[1:]] 	#list of lists	
+        vectors.append(vec)
+    m = np.array(vectors)
+    return vocab, m
+
 def read_predicate_matrix(subspace,ppmi=False):
     vocab = []
     vectors = []
