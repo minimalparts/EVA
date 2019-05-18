@@ -1,9 +1,9 @@
 """Ideal words - extraction and aggregation functions
 
 Usage:
-  compatibility.py --lr=<n> --batch=<n> --epochs=<n> --hidden=<n> --wdecay=<n> [--ext=<file>] [--att] [--rel] [--ppmi] [--save]
-  compatibility.py (-h | --help)
-  compatibility.py --version
+  acceptability.py --lr=<n> --batch=<n> --epochs=<n> --hidden=<n> --wdecay=<n> [--ext=<file>] [--att] [--rel] [--ppmi] [--checkpoint=<dir>]
+  acceptability.py (-h | --help)
+  acceptability.py --version
 
 Options:
   -h --help     Show this screen.
@@ -16,7 +16,7 @@ Options:
   --att         Process attributes.
   --rel         Process relations.
   --ppmi        Uses PPMI version of predicate matrix.
-  --save        Save best model.
+  --checkpoint=<dir>        Save best model to dir.
 
 """
 
@@ -73,13 +73,13 @@ def make_input(data,vocab,pm):
         outm[i] = np.array([float(data[i][2])])
     return cdm1,cdm2,outm
 
-def read_compatibility_data(filename):
-    compatibility_data = []
+def read_acceptability_data(filename):
+    acceptability_data = []
     with open(filename) as f:
         lines = f.read().splitlines()
     for l in lines:
-        compatibility_data.append(l.split())
-    return compatibility_data
+        acceptability_data.append(l.split())
+    return acceptability_data
 
 def return_stats(data_scores):
     for i in range(2,7):
@@ -111,7 +111,7 @@ def validate(net,ids_val,words1_val,words2_val,scores_val):
     #print("VAL COS SCORE:",val_cos_score)
     return(val_pred_score,val_cos_score)
 
-def train_model(words1_train,words2_train,scores_train,words1_val,words2_val,scores_val,ids_train,ids_val,hiddensize,lrate,wdecay,batchsize,epochs,checkpoint,checkpointsdir):
+def train_model(words1_train,words2_train,scores_train,words1_val,words2_val,scores_val,ids_train,ids_val,hiddensize,lrate,wdecay,batchsize,epochs,checkpointsdir):
     '''Initialise network'''
     net = MLP(words1_train.shape[1],scores_train.shape[1],hiddensize)
     net.cuda()
@@ -146,7 +146,8 @@ def train_model(words1_train,words2_train,scores_train,words1_val,words2_val,sco
 
         validation_score = validate(net,ids_val,words1_val,words2_val,scores_val)[0]
         validation_scores.append(validation_score)
-        if np.argmax(validation_scores) == epoch and checkpoint:
+        if np.argmax(validation_scores) == epoch and checkpointsdir != "":
+            print("Saving checkpoint...")
             delete_checkpoints(checkpointsdir)
             torch.save(net, checkpointsdir+"e"+str(epoch))
         #print(validation_scores)
@@ -172,9 +173,9 @@ def prepare_data(external_vector_file,basedir):
         vocab, pm = read_probabilistic_matrix(basedir)
 
     print("Reading dataset...")
-    cd_train = read_compatibility_data('compatibility/in_vg_compatibility.train.txt')
-    cd_val = read_compatibility_data('compatibility/in_vg_compatibility.val.txt')
-    cd_test = read_compatibility_data('compatibility/in_vg_compatibility.test.txt')
+    cd_train = read_acceptability_data('acceptability/in_vg_acceptability.train.txt')
+    cd_val = read_acceptability_data('acceptability/in_vg_acceptability.val.txt')
+    cd_test = read_acceptability_data('acceptability/in_vg_acceptability.test.txt')
 
     words1_train,words2_train,scores_train = make_input(cd_train,vocab,pm)
     words1_val,words2_val,scores_val = make_input(cd_val,vocab,pm)
@@ -196,8 +197,7 @@ def prepare_data(external_vector_file,basedir):
 
 if __name__ == '__main__':
     basedir = "syn"
-    checkpointsdir = "./checkpoints/eva/final/10/"
-    checkpoint = False
+    checkpointsdir = ""
     external_vector_file = ""
     args = docopt(__doc__, version='Ideal Words 0.1')
     if args["--att"] and not args["--rel"]:
@@ -208,20 +208,16 @@ if __name__ == '__main__':
         basedir = "synattrel"
     if args["--ext"]:
         external_vector_file = args["--ext"]
-        if "fasttext" in external_vector_file:
-            checkpointsdir = "./checkpoints/fasttext/final/10/"
-        else:
-            checkpointsdir = "./checkpoints/bert/final/10/"
-    if args["--save"]:
-        checkpoint = True
+    if args["--checkpoint"]:
+        checkpointsdir = args["--checkpoint"]
     lrate = float(args["--lr"])
     batchsize = int(args["--batch"])
     epochs = int(args["--epochs"])
     hiddensize = int(args["--hidden"])
     wdecay = float(args["--wdecay"])
 
-    if checkpoint:
+    if checkpointsdir != "":
         delete_checkpoints(checkpointsdir)
     words1_train,words2_train,scores_train,words1_val,words2_val,scores_val,ids_train,ids_val = prepare_data(external_vector_file,basedir)
-    train_model(words1_train,words2_train,scores_train,words1_val,words2_val,scores_val,ids_train,ids_val,hiddensize,lrate,wdecay,batchsize,epochs,checkpoint,checkpointsdir)
+    train_model(words1_train,words2_train,scores_train,words1_val,words2_val,scores_val,ids_train,ids_val,hiddensize,lrate,wdecay,batchsize,epochs,checkpointsdir)
 

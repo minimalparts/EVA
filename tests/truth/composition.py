@@ -1,8 +1,34 @@
+"""Ideal words
+
+Usage:
+  composition.py [--att] [--rel]
+  composition.py (-h | --help)
+  composition.py --version
+
+Options:
+  -h --help     Show this screen.
+  --version     Show version.
+  --att         Use attributes.
+  --rel         Use relations.
+
+"""
+
+
 import sys
+from docopt import docopt
 sys.path.append('../../utils/')
 from utils import read_entity_matrix, mk_entity_vectors, mk_full_predicate_vectors, read_inverse_entity_matrix
 import numpy as np
 import grammar
+
+if __name__ == '__main__':
+    args = docopt(__doc__, version='Ideal Words 0.1')
+    if args["--att"] and not args["--rel"]:
+        basedir = "synatt"
+    if not args["--att"] and args["--rel"]:
+        basedir = "synrel"
+    if args["--att"] and args["--rel"]:
+        basedir = "synattrel"
 
 def intersection(sets):
     intersection = set.intersection(*sets)
@@ -10,7 +36,7 @@ def intersection(sets):
 
 def wordnetize(w):
     if w[-2:] == "_N":
-        w = w.replace("_N",".n.01")		#HACK -- fix WN sense
+        w = w.replace("_N",".n")		#HACK -- fix WN sense
     else:
         w = w[:-2]
     return w
@@ -40,8 +66,8 @@ for candidate in candidate_phrases:
     lf,space_operations = grammar.get_space_operations(parse)
 
     print("\nPARSE FOUND. Reading entity matrix... Please be patient...")
-    e_to_p = read_inverse_entity_matrix()
-    p_to_e = read_entity_matrix()
+    e_to_p = read_inverse_entity_matrix(basedir)
+    p_to_e = read_entity_matrix(basedir)
     
     o = space_operations[0]
     words = [wordnetize(o[1]),wordnetize(o[2])] 

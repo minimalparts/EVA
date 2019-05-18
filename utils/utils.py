@@ -61,9 +61,10 @@ def read_probabilistic_matrix(subspace):
     m = np.array(vectors)
     return vocab, m
 
-def read_entity_matrix():
+def read_entity_matrix(subspace):
     p_entities = {}
-    with open(base+"/spaces/entity_matrix.dm") as f:
+    loc = base+"/spaces/"+subspace+"/entity_matrix.dm"
+    with open(loc) as f:
         lines = f.read().splitlines()
     for l in lines:
         fields = l.split()
@@ -72,9 +73,10 @@ def read_entity_matrix():
         p_entities[p] = entities
     return p_entities
 
-def read_inverse_entity_matrix():
+def read_inverse_entity_matrix(subspace):
     e_predicates = {}
-    with open(base+"/spaces/inverse_entity_matrix.dm") as f:
+    loc = base+"/spaces/"+subspace+"/inverse_entity_matrix.dm"
+    with open(loc) as f:
         lines = f.read().splitlines()
     for l in lines:
         fields = l.split()
