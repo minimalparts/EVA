@@ -4,7 +4,7 @@ This repo computes truth-theoretic semantic spaces as described in the draft pap
 
 ## Installation
 
-First, you should download and unzip the file [http://clic.cimec.unitn.it/~aurelie.herbelot/ideallanguage.zip](http://clic.cimec.unitn.it/~aurelie.herbelot/ideallanguage.zip) (38M zipped) to your data/ directory. This file contains a representation of the [Visual Genome](http://visualgenome.org/) entities, attributes and relationships which we will use to produce a basic entity matrix. Should you want to re-generate this data, you can do so using the script in *utils/parse.py* (you will need the original Visual Genome json files -- see code for detail).
+First, you should download and unzip the file [http://aurelieherbelot.net/resources/data/ideallanguage.zip](http://aurelieherbelot.net/resources/data/ideallanguage.zip) (38M zipped) to your data/ directory. This file contains a representation of the [Visual Genome](http://visualgenome.org/) entities, attributes and relationships which we will use to produce a basic entity matrix. Should you want to re-generate this data, you can do so using the script in *utils/parse.py* (you will need the original Visual Genome json files -- see code for detail).
 
 Gather all the stats we'll need for building the matrices:
 

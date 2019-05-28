@@ -38,17 +38,14 @@ vocab, m = read_predicate_matrix(subspace,ppmi=args["--ppmi"])
 system = []
 gold = []
 
-with open("SimLex-999.txt",'r') as f:
+with open("in_vg_SimLex999.txt",'r') as f:
     lines = f.read().splitlines()
 
 for l in lines[1:]:
-    fields = l.split('\t')
+    fields = l.split()
     w1 = fields[0]
     w2 = fields[1]
-    score = float(fields[3])
-    if fields[2] == 'N':
-        w1 = w1+".n"    #harmonising formats
-        w2 = w2+".n"
+    score = float(fields[2])
     if w1 in vocab and w2 in vocab:
         cos = 1 - distance.cosine(m[vocab.index(w1)],m[vocab.index(w2)])
         system.append(cos)
