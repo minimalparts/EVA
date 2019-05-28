@@ -15,7 +15,9 @@ Gather all the stats we'll need for building the matrices:
 
 The following matrices will be produced: entity matrix, predicate matrix, probabilistic version of the predicate matrix. Run:
 
-    python3 extraction-aggregation.py
+    python3 extract.py [--rel] [--att]
+
+The flags --rel and --att are optional and process relations and attributes in the Visual Genome, in addition to objects. Best results on our experiments are obtained using a space built over objects and predicates, so using python3 extract --rel.
 
 All space files will be stored in the *spaces/* directory. Formats are as follows:
 
@@ -88,24 +90,18 @@ NB: the code involves a toy grammar linked to an interpretation function, and pe
 
 ### Lexical relations
 
-Run from the *lexsel* directory. To retrieve antonyms from the Visual Genome, do:
+Run from the *lexrel* and *incompatibility* directories.
 
-    python3 antonymy.py
+First, prepare the data in the relevant data/ directory by running *preprocess.py*. Then, to train, do for instance:
 
-This will print a long list ranked by word pair similarity. Note that due to the nature of the Visual Genome, many of the pairs are more items that are 'incompatible' than in a strict antonymy relation.
-
-
-To run an example of polysemy clustering, do:
-
-    python3 polysemy-clustering.py bear 5
+    python3 nn_lexrel.py --batch=700 --epochs=400 --hidden=300 --lr=0.001 --wdecay=0.001 --ext=data/models/lexrel_fasttext_vecs.txt --checkpoint=checkpoints/fasttext/check1
 
 
 ### Acceptability judgements
 
-Run from the *acceptability* directory. This code requires a nearest neighbours file which can be computed from the top directory using *similarity.py* (see instructions above). Run:
+Run from the *acceptability* directory.
 
-    python3 acceptability.py
+First, prepare the data in the *data/* directory by running *preprocess.py*. Then, to train:
 
-You can either enter a phrase yourself (e.g. *red flying cookie*) or press 'r' to get a randomly generated one. The system will return an acceptability judgement for the phrase. When you quit (typing 'q'), all inputs will be returned in order of acceptability. 
+    python3 nn_acceptability.py
 
-NB: this code is not integrated with the grammar, so you can type anything in any order...

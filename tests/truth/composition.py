@@ -21,6 +21,8 @@ from utils import read_entity_matrix, mk_entity_vectors, mk_full_predicate_vecto
 import numpy as np
 import grammar
 
+basedir = "syn"
+
 if __name__ == '__main__':
     args = docopt(__doc__, version='Ideal Words 0.1')
     if args["--att"] and not args["--rel"]:
