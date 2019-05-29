@@ -74,27 +74,38 @@ Warning: the pairwise cosine computation takes a little while. All similarity fi
 
 ## Play with the spaces
 
-The spaces can be inspected from the point of view of various aspects of semantic competence: a) the ability to refer; b) mastery of lexical relations; c) the ability to make graded semantic acceptability judgements with respect to 'normal use'. All code for this is to be found in the *tests* directory, under the re
+The spaces can be inspected from the point of view of various aspects of semantic competence: a) the ability to refer; b) mastery of lexical relations; c) the ability to make graded semantic acceptability judgements with respect to 'normal use'. All code for this is to be found in the *tests* directory, under the relevant directory.
 
 
 ### Reference
 
-Run from the *truth* directory. To retrieve the extension of a particular constituent in the Visual Genome, run:
+Run from the *truth* directory. To retrieve the extension of a particular constituent in the Visual Genome, run the following (with the appropriate flag):
 
-    python3 composition.py
+    python3 composition.py --att
 
 and input a phrase, e.g. *black teddy bear*.
 
-NB: the code involves a toy grammar linked to an interpretation function, and performs semantic space expansion / retraction as explained in the paper. For now, the grammar only implements bare NPs with adjectives and nouns (of any length).
+NB: the code involves a toy grammar linked to an interpretation function, and performs semantic space expansion / retraction as explained in the paper. For now, the grammar only implements bare NPs with adjectives and nouns (of any length). So in practice, you should run with the --att flag.
+
 
 
 ### Lexical relations
 
 Run from the *lexrel* and *incompatibility* directories.
 
-First, prepare the data in the relevant data/ directory by running *preprocess.py*. Then, to train, do for instance:
+First, prepare the data in the relevant *data/* directory by running *preprocess.py*. Then, to train, do for instance:
 
     python3 nn_lexrel.py --batch=700 --epochs=400 --hidden=300 --lr=0.001 --wdecay=0.001 --ext=data/models/lexrel_fasttext_vecs.txt --checkpoint=checkpoints/fasttext/check1
+
+Then to test:
+
+    python3 nn_lexrel_test.py --model=checkpoints/fasttext/check1 --ext=data/models/lexrel_fasttext_vecs.txt 
+
+Hyperparameter search with Bayesian optimisation can be conducted by running *optimise_nn_lexrel.py* or *optimise_nn_compatibility.py*.
+
+More help can be obtained with each script by running
+
+    name_of_script.py --help
 
 
 ### Acceptability judgements
