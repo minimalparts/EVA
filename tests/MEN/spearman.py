@@ -1,16 +1,18 @@
 """Ideal words - test on MEN dataset
 
 Usage:
-  spearman.py [--att] [--rel] [--ppmi]
+  spearman.py [--att] [--rel] [--sit] [--ppmi] [--pca]
   spearman.py (-h | --help)
   spearman.py --version
 
 Options:
   -h --help     Show this screen.
   --version     Show version.
-  --att         Process attributes.
-  --rel         Process relations.
+  --att         Use attributes.
+  --rel         Use relations.
+  --sit         Use situtation cooccurrences.
   --ppmi        Uses PPMI version of predicate matrix.
+  --pca	        Uses PCA-reduced version of predicate matrix (300D).
 
 """
 
@@ -18,11 +20,13 @@ Options:
 import sys
 sys.path.append('../../utils/')
 from docopt import docopt
-from utils import read_predicate_matrix
+import numpy as np
+from utils import read_predicate_matrix, read_probabilistic_matrix, compute_PCA, normalise, read_external_vectors
 from scipy.stats import spearmanr
 from scipy.spatial import distance
 
 subspace = "syn"
+
 
 if __name__ == '__main__':
     args = docopt(__doc__, version='Ideal Words 0.1')
@@ -30,10 +34,13 @@ if __name__ == '__main__':
         subspace = "synatt"
     if not args["--att"] and args["--rel"]:
         subspace = "synrel"
-    if args["--att"] and args["--rel"]:
-        subspace = "synattrel"
+    if args["--att"] and args["--sit"] and args["--rel"]:
+        subspace = "synattrelsit"
 
 vocab, m = read_predicate_matrix(subspace,ppmi=args["--ppmi"])
+#vocab, m = read_probabilistic_matrix(subspace)
+if args["--pca"]:
+    m = compute_PCA(normalise(m),300)
 
 system = []
 gold = []

@@ -101,7 +101,11 @@ Then to test:
 
     python3 nn_lexrel_test.py --model=checkpoints/fasttext/check1 --ext=data/models/lexrel_fasttext_vecs.txt 
 
-Hyperparameter search with Bayesian optimisation can be conducted by running *optimise_nn_lexrel.py* or *optimise_nn_compatibility.py*.
+Hyperparameter search with Bayesian optimisation can be conducted by running *optimise_nn_lexrel.py* or *optimise_nn_compatibility.py*. For example:
+
+    python3 optimise_nn_compatibility.py
+
+(Make sure to change paths as you see fit in the script itself.)
 
 More help can be obtained with each script by running
 

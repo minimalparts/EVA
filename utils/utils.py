@@ -1,6 +1,8 @@
 import numpy as np
 from sklearn.metrics import pairwise_distances
 from scipy.spatial.distance import cosine
+from sklearn.decomposition import PCA
+from scipy import linalg as LA
 import os
 base=os.path.abspath(os.path.join(os.path.realpath(__file__), "../.."))
 
@@ -37,12 +39,15 @@ def read_predicate_matrix(subspace,ppmi=False):
     print(loc)
     with open(loc) as f:
         dmlines=f.read().splitlines()
+    c = 0
     for l in dmlines:
         items=l.split()
         target = items[0]
         vocab.append(target)
-        vec=[float(i) for i in items[1:]] 	#list of lists	
+        vec=[float(i) for i in items[1:]]
+        vec[c] = 0				#For operations like similarity, better have 0s on the diagonal	
         vectors.append(vec)
+        c+=1
     m = np.array(vectors)
     return vocab, m
 
@@ -187,6 +192,13 @@ def write_numpy_matrix(m,i_to_predicates,filename):
 def compute_cosines(m):
     return 1-pairwise_distances(m, metric="cosine")
 
+def compute_PCA(m,dim):
+    m -= np.mean(m, axis = 0)
+    pca = PCA(n_components=dim)
+    pca.fit(m)
+    return pca.transform(m)
+
+
 def write_cosines(words, cosines ,filename):
     f = open(filename,'w',encoding='utf-8')
     for i in range(len(words)):
@@ -228,4 +240,10 @@ def write_vocabulary(words, filename):
     for i in range(len(words)):
        f.write('%s %s\n' %(i,words[i]))
     f.close()
+
+def normalise(predicate_matrix):
+    norm_matrix = np.zeros(predicate_matrix.shape)
+    for i in range(predicate_matrix.shape[0]):
+        norm_matrix[i] = predicate_matrix[i] / np.sum(predicate_matrix[i])
+    return norm_matrix
 
