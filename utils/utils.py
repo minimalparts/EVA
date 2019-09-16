@@ -1,4 +1,5 @@
 import numpy as np
+from math import log
 from sklearn.metrics import pairwise_distances
 from scipy.spatial.distance import cosine
 from sklearn.decomposition import PCA
@@ -29,25 +30,23 @@ def read_external_vectors(vector_file):
     m = np.array(vectors)
     return vocab, m
 
-def read_predicate_matrix(subspace,ppmi=False):
+def read_predicate_matrix(subspace,ppmi=False,pca=False):
     vocab = []
     vectors = []
+    loc = base+"/spaces/"+subspace+"/predicate_matrix.dm"
     if ppmi:
-        loc = base+"/spaces/"+subspace+"/predicate_matrix_ppmi.dm"
-    else:
-        loc = base+"/spaces/"+subspace+"/predicate_matrix.dm"
-    print(loc)
+        loc = loc.replace(".dm","_ppmi.dm")
+    if pca:
+        loc = loc.replace(".dm","_pca.dm")
+    print("Loading",loc,"...")
     with open(loc) as f:
         dmlines=f.read().splitlines()
-    c = 0
     for l in dmlines:
         items=l.split()
         target = items[0]
         vocab.append(target)
         vec=[float(i) for i in items[1:]]
-        vec[c] = 0				#For operations like similarity, better have 0s on the diagonal	
         vectors.append(vec)
-        c+=1
     m = np.array(vectors)
     return vocab, m
 
@@ -189,10 +188,26 @@ def write_numpy_matrix(m,i_to_predicates,filename):
        f.write('%s %s\n' %(p,v_string))
     f.close()
 
+
+def ppmi(matrix):
+    ppmi_matrix = np.zeros(matrix.shape)
+    N = np.sum(matrix)
+    row_sums = np.sum(matrix, axis=1)
+    for i in range(matrix.shape[0]):
+        for j in range(matrix.shape[1]):
+            if i != j:		#i !=j cos for operations like similarity, better have 0s on the diagonal	
+                try:
+                    ppmi_matrix[i][j] = max(0,log(matrix[i][j] * N / (row_sums[i] * row_sums[j])))
+                except:
+                    pass
+    return ppmi_matrix
+
+
 def compute_cosines(m):
     return 1-pairwise_distances(m, metric="cosine")
 
 def compute_PCA(m,dim):
+    np.fill_diagonal(m, 0)			#Make sure diagonal is 0
     m -= np.mean(m, axis = 0)
     pca = PCA(n_components=dim)
     pca.fit(m)

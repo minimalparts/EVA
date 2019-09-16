@@ -21,7 +21,8 @@ import sys
 sys.path.append('../../utils/')
 from docopt import docopt
 import numpy as np
-from utils import read_predicate_matrix, read_probabilistic_matrix, compute_PCA, normalise, read_external_vectors
+from utils import read_predicate_matrix, read_probabilistic_matrix, read_external_vectors
+from messaging import output_logo
 from scipy.stats import spearmanr
 from scipy.spatial import distance
 
@@ -29,23 +30,30 @@ subspace = "syn"
 
 
 if __name__ == '__main__':
+    output_logo()
     args = docopt(__doc__, version='Ideal Words 0.1')
-    if args["--att"] and not args["--rel"]:
+    if args["--att"] and not args["--rel"] and not args["--sit"]:
         subspace = "synatt"
-    if not args["--att"] and args["--rel"]:
+    if args["--rel"] and not args["--att"] and not args["--sit"]:
         subspace = "synrel"
-    if args["--att"] and args["--sit"] and args["--rel"]:
+    if args["--sit"] and not args["--att"] and not args["--rel"]:
+        subspace = "synsit"
+    if args["--att"] and args["--rel"] and not args["--sit"]:
+        subspace = "synattrel"
+    if args["--att"] and args["--sit"] and not args["--rel"]:
+        subspace = "synattsit"
+    if not args["--att"] and args["--rel"] and args["--sit"]:
+        subspace = "synrelsit"
+    if args["--att"] and args["--rel"] and args["--sit"]:
         subspace = "synattrelsit"
 
-vocab, m = read_predicate_matrix(subspace,ppmi=args["--ppmi"])
-#vocab, m = read_probabilistic_matrix(subspace)
-if args["--pca"]:
-    m = compute_PCA(normalise(m),300)
+#vocab, m = read_predicate_matrix(subspace,ppmi=args["--ppmi"],pca=args["--pca"])
+vocab, m = read_external_vectors("../../spaces/synsit/ext2vec.dm")
 
 system = []
 gold = []
 
-f = open("MEN_dataset_lemma_form_full",'r')
+f = open("data/MEN_dataset_lemma_form_full",'r')
 
 for l in f:
     fields = l.rstrip('\n').split()
@@ -56,8 +64,12 @@ for l in f:
         cos = 1 - distance.cosine(m[vocab.index(w1)],m[vocab.index(w2)])
         system.append(cos)
         gold.append(score)
-        print(w1,w2,cos,score)
+        #print(w1,w2,cos,score)
 f.close()
 
+
+print("SETTING:")
+print(args)
+print("***\n")
 print("SPEARMAN:",spearmanr(system,gold))
 print("("+str(len(system))+" pairs out of the original 3000 could be processed, due to vocabulary size.)")

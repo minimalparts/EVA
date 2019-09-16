@@ -20,12 +20,14 @@ sys.path.append('./utils/')
 import re
 from docopt import docopt
 import numpy as np
-from utils import read_entities, write_dictionary, write_numpy_matrix, normalise, compute_PCA
+from utils import read_entities, write_dictionary, write_numpy_matrix, normalise, compute_PCA, ppmi
+from messaging import output_logo
 
 minfreq = 100	#Min frequency of predicates 
-basedirs = "syn"
+basedir = "syn"
 
 if __name__ == '__main__':
+    output_logo()
     args = docopt(__doc__, version='Ideal Words 0.1')
     if args["--att"] and not args["--rel"] and not args["--sit"]:
         basedir = "synatt"
@@ -33,6 +35,10 @@ if __name__ == '__main__':
         basedir = "synrel"
     if args["--sit"] and not args["--att"] and not args["--rel"]:
         basedir = "synsit"
+    if args["--att"] and args["--rel"] and not args["--sit"]:
+        basedir = "synattrel"
+    if args["--att"] and args["--sit"] and not args["--rel"]:
+        basedir = "synattsit"
     if not args["--att"] and args["--rel"] and args["--sit"]:
         basedir = "synrelsit"
     if args["--att"] and args["--rel"] and args["--sit"]:
@@ -106,15 +112,6 @@ def prob_interpretation(predicate_matrix):
     for i in range(predicate_matrix.shape[0]):
         prob_matrix[i] = predicate_matrix[i] / predicate_matrix[i][i]
     return prob_matrix
-
-def ppmi(matrix):
-    ppmi_matrix = np.zeros(matrix.shape)
-    N = np.sum(matrix)
-    row_sums = np.sum(matrix, axis=1)
-    for i in range(matrix.shape[0]):
-        for j in range(matrix.shape[1]):
-            ppmi_matrix[i][j] = matrix[i][j] * N / (row_sums[i] * row_sums[j])
-    return ppmi_matrix
 
 print("Reading entity record...")
 entities = read_entities()
@@ -207,6 +204,9 @@ write_numpy_matrix(predicate_matrix, i_to_predicates, spacedir+"predicate_matrix
 
 prob_matrix = prob_interpretation(predicate_matrix)
 write_numpy_matrix(prob_matrix, i_to_predicates, spacedir+"probabilistic_matrix.dm")
+
+pca_matrix = compute_PCA(normalise(predicate_matrix),300)
+write_numpy_matrix(pca_matrix, i_to_predicates, spacedir+"predicate_matrix_pca.dm")
 
 ppmi_matrix = ppmi(predicate_matrix)
 write_numpy_matrix(ppmi_matrix, i_to_predicates, spacedir+"predicate_matrix_ppmi.dm")

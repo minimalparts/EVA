@@ -1,16 +1,18 @@
-"""Ideal words - test on MEN dataset
+"""Ideal words - test on SimLex-999 dataset
 
 Usage:
-  spearman.py [--att] [--rel] [--ppmi]
+  spearman.py [--att] [--rel] [--sit] [--ppmi] [--pca]
   spearman.py (-h | --help)
   spearman.py --version
 
 Options:
   -h --help     Show this screen.
   --version     Show version.
-  --att         Process attributes.
-  --rel         Process relations.
+  --att         Use attributes.
+  --rel         Use relations.
+  --sit         Use situtation cooccurrences.
   --ppmi        Uses PPMI version of predicate matrix.
+  --pca	        Uses PCA-reduced version of predicate matrix (300D).
 
 """
 
@@ -18,27 +20,40 @@ Options:
 import sys
 sys.path.append('../../utils/')
 from docopt import docopt
-from utils import read_predicate_matrix
+import numpy as np
+from utils import read_predicate_matrix, read_probabilistic_matrix, read_external_vectors
+from messaging import output_logo
 from scipy.stats import spearmanr
 from scipy.spatial import distance
 
 subspace = "syn"
 
-if __name__ == '__main__':
-    args = docopt(__doc__, version='Ideal Words 0.1')
-    if args["--att"] and not args["--rel"]:
-        subspace = "synatt"
-    if not args["--att"] and args["--rel"]:
-        subspace = "synrel"
-    if args["--att"] and args["--rel"]:
-        subspace = "synattrel"
 
-vocab, m = read_predicate_matrix(subspace,ppmi=args["--ppmi"])
+if __name__ == '__main__':
+    output_logo()
+    args = docopt(__doc__, version='Ideal Words 0.1')
+    if args["--att"] and not args["--rel"] and not args["--sit"]:
+        subspace = "synatt"
+    if args["--rel"] and not args["--att"] and not args["--sit"]:
+        subspace = "synrel"
+    if args["--sit"] and not args["--att"] and not args["--rel"]:
+        subspace = "synsit"
+    if args["--att"] and args["--rel"] and not args["--sit"]:
+        subspace = "synattrel"
+    if args["--att"] and args["--sit"] and not args["--rel"]:
+        subspace = "synattsit"
+    if not args["--att"] and args["--rel"] and args["--sit"]:
+        subspace = "synrelsit"
+    if args["--att"] and args["--rel"] and args["--sit"]:
+        subspace = "synattrelsit"
+
+#vocab, m = read_predicate_matrix(subspace,ppmi=args["--ppmi"],pca=args["--pca"])
+vocab, m = read_external_vectors("../../spaces/synattrel/ext2vec.dm")
 
 system = []
 gold = []
 
-with open("in_vg_SimLex999.txt",'r') as f:
+with open("data/in_vg_SimLex999.txt",'r') as f:
     lines = f.read().splitlines()
 
 for l in lines[1:]:
@@ -50,8 +65,12 @@ for l in lines[1:]:
         cos = 1 - distance.cosine(m[vocab.index(w1)],m[vocab.index(w2)])
         system.append(cos)
         gold.append(score)
-        print(w1,w2,cos,score)
+        #print(w1,w2,cos,score)
 f.close()
 
+
+print("SETTING:")
+print(args)
+print("***\n")
 print("SPEARMAN:",spearmanr(system,gold))
-print("("+str(len(system))+" pairs out of the original 999 could be processed, due to vocabulary size.)")
+print("("+str(len(system))+" pairs out of the original 3000 could be processed, due to vocabulary size.)")

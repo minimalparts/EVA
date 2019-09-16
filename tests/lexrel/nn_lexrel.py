@@ -166,7 +166,8 @@ def prepare_data(external_vector_file,basedir):
         #print(vocab)
     else:
         #print("Reading probabilistic matrix... Please be patient...")
-        vocab, pm = read_probabilistic_matrix(basedir)
+        #vocab, pm = read_probabilistic_matrix(basedir)
+        vocab, pm = read_predicate_matrix(basedir,ppmi=True)
 
     print("Reading dataset...")
     cd_train = read_lexrel_data('data/in_vg_lexrel.train.txt')
@@ -194,15 +195,16 @@ def prepare_data(external_vector_file,basedir):
 if __name__ == '__main__':
     basedir = "syn"
     checkpointsdir = ""
-    checkpoint = False
     external_vector_file = ""
     args = docopt(__doc__, version='Ideal Words 0.1')
-    if args["--att"] and not args["--rel"]:
-        basedir = "synatt"
-    if not args["--att"] and args["--rel"]:
-        basedir = "synrel"
-    if args["--att"] and args["--rel"]:
-        basedir = "synattrel"
+    if args["--sit"] and not args["--rel"]:
+        basedir = "synsit"
+    if not args["--sit"] and args["--rel"]:
+        basedir = "synsit"
+    if args["--sit"] and args["--rel"]:
+        basedir = "synrelsit"
+    if args["--sit"] and args["--rel"] and args["--att"]:
+        basedir = "synattrelsit"
     if args["--ext"]:
         external_vector_file = args["--ext"]
     if args["--checkpoint"]:
@@ -213,7 +215,7 @@ if __name__ == '__main__':
     hiddensize = int(args["--hidden"])
     wdecay = float(args["--wdecay"])
 
-    if checkpoint:
+    if checkpointsdir != "":
         delete_checkpoints(checkpointsdir)
     words1_train,words2_train,scores_train,words1_val,words2_val,scores_val,ids_train,ids_val = prepare_data(external_vector_file,basedir)
     train_model(words1_train,words2_train,scores_train,words1_val,words2_val,scores_val,ids_train,ids_val,hiddensize,lrate,wdecay,batchsize,epochs,checkpointsdir)

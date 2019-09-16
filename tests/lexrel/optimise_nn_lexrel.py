@@ -5,10 +5,10 @@ from bayes_opt.util import load_logs
 from nn_lexrel import prepare_data, train_model
 from math import isnan
 
-logger = JSONLogger(path="bert.optimisation_logs.r1.json")
+logger = JSONLogger(path="eva.ext2vec.synattsit.optimisation_logs.r1.json")
 
 # Bounded region of parameter space
-pbounds = {'hiddensize': (100, 768), 'lrate': (0.001, 0.01), 'wdecay': (0.001,0.01), 'batchsize': (32,1024), 'epochs': (100,500)}
+pbounds = {'hiddensize': (100, 300), 'lrate': (0.001, 0.01), 'wdecay': (0.001,0.01), 'batchsize': (32,1024), 'epochs': (100,500)}
 
 #hiddensize = 100
 #lrate = 0.01
@@ -16,10 +16,10 @@ pbounds = {'hiddensize': (100, 768), 'lrate': (0.001, 0.01), 'wdecay': (0.001,0.
 #batchsize = 512
 #epochs = 200
 
-external_vector_file = "data/models/lexrel_bert_vecs.txt"
+external_vector_file = "../../spaces/synattsit/ext2vec.dm"
 #external_vector_file = ""
-basedir = "synrel"
-checkpointsdir = "./checkpoints/eva/optim/"
+basedir = "synattsit"
+checkpointsdir = "./checkpoints/eva/ext2vec/synattsit/"
 if "fasttext" in external_vector_file:
     checkpointsdir = "./checkpoints/fasttext/optim/"
 if "bert" in external_vector_file:

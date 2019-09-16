@@ -5,10 +5,10 @@ from bayes_opt.util import load_logs
 from nn_compatibility import prepare_data, train_model
 from math import isnan
 
-logger = JSONLogger(path="bert.optimisation_logs.r2.json")
+logger = JSONLogger(path="eva.ext2vec.synrelsit.optimisation_logs.r1.json")
 
 # Bounded region of parameter space
-pbounds = {'hiddensize': (100, 769), 'lrate': (0.001, 0.01), 'wdecay': (0.001,0.01), 'batchsize': (32,1024), 'epochs': (100,500)}
+pbounds = {'hiddensize': (100, 300), 'lrate': (0.001, 0.01), 'wdecay': (0.001,0.01), 'batchsize': (32,1024), 'epochs': (100,500)}
 
 #hiddensize = 100
 #lrate = 0.01
@@ -16,20 +16,21 @@ pbounds = {'hiddensize': (100, 769), 'lrate': (0.001, 0.01), 'wdecay': (0.001,0.
 #batchsize = 512
 #epochs = 200
 
-external_vector_file = "compatibility/models/in_vg_compatibility_bert_4l.txt"
-#external_vector_file = "compatibility/models/compatibility_fasttext_vecs.txt"
+external_vector_file = "../../spaces/synrelsit/ext2vec.dm"
 #external_vector_file = ""
-basedir = "synrel"
-checkpointsdir = "./checkpoints/eva/optim/"
+basedir = "synrelsit"
+checkpointsdir = "./checkpoints/eva/ext2vec/synrelsit/"
 if "fasttext" in external_vector_file:
     checkpointsdir = "./checkpoints/fasttext/optim/"
 if "bert" in external_vector_file:
     checkpointsdir = "./checkpoints/bert/optim/"
+if "w2v" in external_vector_file:
+    checkpointsdir = "./checkpoints/w2v/optim/"
 
 words1_train,words2_train,scores_train,words1_val,words2_val,scores_val,ids_train,ids_val = prepare_data(external_vector_file,basedir)
 
 def compatibility(hiddensize,lrate,wdecay,batchsize,epochs):
-    score = train_model(words1_train,words2_train,scores_train,words1_val,words2_val,scores_val,ids_train,ids_val,int(hiddensize),lrate,wdecay,int(batchsize),int(epochs),False,checkpointsdir)
+    score = train_model(words1_train,words2_train,scores_train,words1_val,words2_val,scores_val,ids_train,ids_val,int(hiddensize),lrate,wdecay,int(batchsize),int(epochs),checkpointsdir)
     if isnan(score):
         score = 0
     return score
@@ -41,11 +42,11 @@ optimizer = BayesianOptimization(
 )
 
 optimizer.subscribe(Events.OPTMIZATION_STEP, logger)
-load_logs(optimizer, logs=["bert.optimisation_logs.r1.json"])
+#load_logs(optimizer, logs=["bert.optimisation_logs.r1.json"])
 
 optimizer.maximize(
     init_points=2,
-    n_iter=150,
+    n_iter=200,
 )
 
 print(optimizer.max)

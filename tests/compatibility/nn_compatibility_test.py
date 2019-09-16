@@ -1,17 +1,18 @@
 """Ideal words - extraction and aggregation functions
 
 Usage:
-  nn_compatibility_test.py --model=<file> [--ext=<file>] [--att] [--rel] [--ppmi] 
+  nn_compatibility_test.py --model=<file> [--ext=<file>] [--att] [--sit] [--rel] [--ppmi] 
   nn_compatibility_test.py (-h | --help)
   nn_compatibility_test.py --version
 
 Options:
   -h --help          Show this screen.
   --version          Show version.
-  --model=<file>    File with parameters from validation step.
+  --model=<file>     File with parameters from validation step.
   --ext=<file>       File with external vectors (FastText, BERT...)
   --att              Process attributes.
   --rel              Process relations.
+  --sit              Process situations.
   --ppmi             Uses PPMI version of predicate matrix.
 
 """
@@ -21,7 +22,7 @@ sys.path.append('../../utils/')
 import itertools
 from docopt import docopt
 from scipy.stats import spearmanr
-from utils import read_external_vectors, read_probabilistic_matrix, read_nearest_neighbours, read_cosines
+from utils import read_external_vectors, read_probabilistic_matrix, read_predicate_matrix, read_nearest_neighbours, read_cosines
 import torch
 from torch.autograd import Variable
 import torch.nn as nn
@@ -112,12 +113,13 @@ def prepare_data(external_vector_file,basedir):
         #print(vocab)
     else:
         #print("Reading probabilistic matrix... Please be patient...")
-        vocab, pm = read_probabilistic_matrix(basedir)
+        #vocab, pm = read_probabilistic_matrix(basedir)
+        vocab, pm = read_predicate_matrix(basedir,ppmi=True,pca=True)
 
     print("Reading dataset...")
-    cd_train = read_compatibility_data('compatibility/in_vg_compatibility.train.txt')
-    cd_val = read_compatibility_data('compatibility/in_vg_compatibility.val.txt')
-    cd_test = read_compatibility_data('compatibility/in_vg_compatibility.test.txt')
+    cd_train = read_compatibility_data('data/in_vg_compatibility.train.txt')
+    cd_val = read_compatibility_data('data/in_vg_compatibility.val.txt')
+    cd_test = read_compatibility_data('data/in_vg_compatibility.test.txt')
 
     words1_train,words2_train,scores_train = make_input(cd_train,vocab,pm)
     words1_val,words2_val,scores_val = make_input(cd_val,vocab,pm)
@@ -141,9 +143,9 @@ if __name__ == '__main__':
     basedir = "syn"
     external_vector_file = ""
     args = docopt(__doc__, version='Ideal Words 0.1')
-    if args["--att"] and not args["--rel"]:
-        basedir = "synatt"
-    if not args["--att"] and args["--rel"]:
+    if args["--sit"] and not args["--rel"]:
+        basedir = "synsit"
+    if not args["--sit"] and args["--rel"]:
         basedir = "synrel"
     if args["--att"] and args["--rel"]:
         basedir = "synattrel"

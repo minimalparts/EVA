@@ -8,16 +8,16 @@ First, you should download and unzip the file [http://aurelieherbelot.net/resour
 
 Gather all the stats we'll need for building the matrices:
 
-    python3 utils/stats.py
+    cd utils; python3 stats.py
 
 
 ## Generate the semantic spaces
 
 The following matrices will be produced: entity matrix, predicate matrix, probabilistic version of the predicate matrix. Run:
 
-    python3 extract.py [--rel] [--att]
+    python3 extract.py [--att] [--rel] [--sit]
 
-The flags --rel and --att are optional and process relations and attributes in the Visual Genome, in addition to objects. Best results on our experiments are obtained using a space built over objects and predicates, so using python3 extract --rel.
+The flags are optional and process relations, attributes and situations in the Visual Genome, in addition to objects. Spaces are produced for the raw cooccurrence matrix, as well as its probabilistic version. In addition, PPMI and PCA-reduced versions are generated. 
 
 All space files will be stored in the *spaces/* directory. Formats are as follows:
 
@@ -74,7 +74,7 @@ Warning: the pairwise cosine computation takes a little while. All similarity fi
 
 ## Play with the spaces
 
-The spaces can be inspected from the point of view of various aspects of semantic competence: a) the ability to refer; b) mastery of lexical relations; c) the ability to make graded semantic acceptability judgements with respect to 'normal use'. All code for this is to be found in the *tests* directory, under the relevant directory.
+The spaces can be inspected from the point of view of various aspects of semantic competence: a) the ability to refer; b) mastery of lexical relations; c) the ability to make graded semantic acceptability judgements with respect to 'normal use'. All code for this is to be found in the *tests* directory, under the re
 
 
 ### Reference
@@ -88,28 +88,13 @@ and input a phrase, e.g. *black teddy bear*.
 NB: the code involves a toy grammar linked to an interpretation function, and performs semantic space expansion / retraction as explained in the paper. For now, the grammar only implements bare NPs with adjectives and nouns (of any length). So in practice, you should run with the --att flag.
 
 
-
 ### Lexical relations
 
 Run from the *lexrel* and *incompatibility* directories.
 
-First, prepare the data in the relevant *data/* directory by running *preprocess.py*. Then, to train, do for instance:
+First, prepare the data in the relevant data/ directory by running *preprocess.py*. Then, to train, do for instance:
 
     python3 nn_lexrel.py --batch=700 --epochs=400 --hidden=300 --lr=0.001 --wdecay=0.001 --ext=data/models/lexrel_fasttext_vecs.txt --checkpoint=checkpoints/fasttext/check1
-
-Then to test:
-
-    python3 nn_lexrel_test.py --model=checkpoints/fasttext/check1 --ext=data/models/lexrel_fasttext_vecs.txt 
-
-Hyperparameter search with Bayesian optimisation can be conducted by running *optimise_nn_lexrel.py* or *optimise_nn_compatibility.py*. For example:
-
-    python3 optimise_nn_compatibility.py
-
-(Make sure to change paths as you see fit in the script itself.)
-
-More help can be obtained with each script by running
-
-    name_of_script.py --help
 
 
 ### Acceptability judgements

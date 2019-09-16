@@ -1,9 +1,9 @@
 """Ideal words
 
 Usage:
-  extract.py [--att] [--rel]
-  extract.py (-h | --help)
-  extract.py --version
+  preprocess.py [--att] [--rel]
+  preprocess.py (-h | --help)
+  proprocess.py --version
 
 Options:
   -h --help     Show this screen.
