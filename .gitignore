@@ -2,6 +2,11 @@
 
 *tar.gz
 *.json
+spaces/syn*
+tests/*/results
+
+*data/
+!data/README.md
 
 # Standard python stuff
 
