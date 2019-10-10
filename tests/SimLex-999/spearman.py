@@ -1,7 +1,9 @@
 """Ideal words - test on SimLex-999 dataset
 
 Usage:
-  spearman.py [--att] [--rel] [--sit] [--ppmi] [--pca]
+  spearman.py count [--att] [--rel] [--sit] [--ppmi] [--pca]
+  spearman.py ext2vec [--att] [--rel] [--sit]
+  spearman.py compare [--file=<file>]
   spearman.py (-h | --help)
   spearman.py --version
 
@@ -47,8 +49,12 @@ if __name__ == '__main__':
     if args["--att"] and args["--rel"] and args["--sit"]:
         subspace = "synattrelsit"
 
-#vocab, m = read_predicate_matrix(subspace,ppmi=args["--ppmi"],pca=args["--pca"])
-vocab, m = read_external_vectors("../../spaces/synattrel/ext2vec.dm")
+if args["count"]:
+    vocab, m = read_predicate_matrix(subspace,ppmi=args["--ppmi"],pca=args["--pca"])
+if args["ext2vec"]:
+    vocab, m = read_external_vectors("../../spaces/"+subspace+"/ext2vec.dm")
+if args["compare"]:
+    vocab, m = read_external_vectors(args["--file"])
 
 system = []
 gold = []
