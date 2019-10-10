@@ -49,17 +49,29 @@ For each entity, the predicates applicable to that entity are shown. E.g.
     3132144 hand.n.01 of(-,guy.n.01)
 
 
+## Run Ext2Vec
+
+TODO
+
+
+
 ## Evaluate spaces on MEN and SimLex-999
 
-Spaces can be evaluated on the standard relatedness and similarity test sets MEN and SimLex-999. To do so, go to *tests/MEN* or *tests/SimLex* and run:
+Spaces can be evaluated on the standard relatedness and similarity test sets MEN and SimLex-999. To do so, go to *tests/MEN* or *tests/SimLex*. Evaluation can be performed on count spaces (with or without PPMI and PCA), on the output space of ext2vec, or on external vectors for comparison. For instance:
 
-    python3 spearman.py
+    python spearman.py ext2vec --att --rel
 
-It is possible to choose the space that is evaluated by using the flags *--att* and *--rel* (to include attribute and relations dimensions). Adding the flag *--ppmi* will run on the PPMI version of the predicate matrix. So for example:
+It is possible to choose the space that is evaluated by using the flags *--att* and *--rel* (to include attribute and relations dimensions). Adding the flag *--ppmi* will run on the PPMI version of the predicate matrix, similarly with the *--pca* flag. So for example:
 
-    python3 spearman.py --rel --ppmi
+    python3 spearman.py count --rel --ppmi --pca
 
-would run on a space with relation dimensions, PPMI-reduced.
+would run on a count space with relation dimensions, with PPMI weighting and PCA.
+
+To run a comparison with FastText VG:
+
+    python3 spearman.py compare --file=../../spaces/fasttext/vg_description_corpus_2M.vecs.txt
+
+
 
 
 ## Generate standard similarity measures
