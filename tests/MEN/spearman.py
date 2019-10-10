@@ -1,7 +1,9 @@
 """Ideal words - test on MEN dataset
 
 Usage:
-  spearman.py [--att] [--rel] [--sit] [--ppmi] [--pca]
+  spearman.py count [--att] [--rel] [--sit] [--ppmi] [--pca]
+  spearman.py ext2vec [--att] [--rel] [--sit]
+  spearman.py compare [--file=<file>]
   spearman.py (-h | --help)
   spearman.py --version
 
@@ -21,7 +23,7 @@ import sys
 sys.path.append('../../utils/')
 from docopt import docopt
 import numpy as np
-from utils import read_predicate_matrix, read_probabilistic_matrix, read_external_vectors
+from utils import read_predicate_matrix, read_external_vectors
 from messaging import output_logo
 from scipy.stats import spearmanr
 from scipy.spatial import distance
@@ -47,8 +49,12 @@ if __name__ == '__main__':
     if args["--att"] and args["--rel"] and args["--sit"]:
         subspace = "synattrelsit"
 
-#vocab, m = read_predicate_matrix(subspace,ppmi=args["--ppmi"],pca=args["--pca"])
-vocab, m = read_external_vectors("../../spaces/synsit/ext2vec.dm")
+if args["count"]:
+    vocab, m = read_predicate_matrix(subspace,ppmi=args["--ppmi"],pca=args["--pca"])
+if args["ext2vec"]:
+    vocab, m = read_external_vectors("../../spaces/"+subspace+"/ext2vec.dm")
+if args["compare"]:
+    vocab, m = read_external_vectors(args["--file"])
 
 system = []
 gold = []
