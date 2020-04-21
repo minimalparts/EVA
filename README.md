@@ -98,7 +98,7 @@ Warning: the pairwise cosine computation takes a little while. All similarity fi
 
 ## Play with the spaces
 
-The spaces can be inspected from the point of view of various aspects of semantic competence: a) the ability to refer; b) mastery of lexical relations; c) the ability to make graded semantic acceptability judgements with respect to 'normal use'. All code for this is to be found in the *tests* directory, under the re
+The spaces can be inspected from the point of view of various aspects of semantic competence: a) the ability to refer; b) mastery of lexical relations; c) the ability to make graded semantic acceptability judgements with respect to 'normal use'. All code for this is to be found in the *tests* directory, under the relevant subfolder.
 
 
 ### Reference
