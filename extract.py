@@ -118,7 +118,8 @@ entities = read_entities()
 print("Reading predicate record... keeping predicates with frequency >",minfreq,"...")
 i_to_predicates, predicates_to_i = make_predicates(args["--att"],args["--rel"])
 
-print("Processing ideal language... This will take a few minutes...")
+print("Processing ideal language... This will take a while...")
+print("Go and get tea/coffee...")
 with open("data/ideallanguage.txt") as f:
     ideal_language_lines = f.read().splitlines()
 

@@ -17,7 +17,7 @@ The following matrices will be produced: entity matrix, predicate matrix, probab
 
     python3 extract.py [--att] [--rel] [--sit]
 
-The flags are optional and process relations, attributes and situations in the Visual Genome, in addition to objects. Spaces are produced for the raw cooccurrence matrix, as well as its probabilistic version. In addition, PPMI and PCA-reduced versions are generated. 
+The flags are optional and process relations, attributes and situations in the Visual Genome, in addition to objects. Spaces are produced for the raw cooccurrence matrix, as well as its probabilistic version. In addition, PPMI and PCA-reduced versions are generated. If you're getting started, the combination of *--att* and *--rel* should give you a fairly rounded model.
 
 All space files will be stored in the *spaces/* directory. Formats are as follows:
 
@@ -51,7 +51,17 @@ For each entity, the predicates applicable to that entity are shown. E.g.
 
 ## Run Ext2Vec
 
-TODO
+The ext2vec model is an 'extensional' version of the famous Word2Vec model. It produces vectors at reduced dimensionality from a raw (extensional) co-occurrence matrix. In a nutshell, *ext2vec* re-uses the 'context prediction' task of the original skip-gram model, but porting it to a formal semantics setting. Specifically, the task consists in predicting whether a 'target' predicate (from the rows of the predicate matrix) and a 'context' predicate (from the columns of the matrix) have been seen together in the description of a unique, grounded entity. 
+
+Run *ext2vec* with:
+
+    python3 embed_model.py [--att] [--rel] [--sit]
+
+(where the flags should be the same as those you used earlier with the *extract.py* script).
+
+This will run on the *predicate_matrix.dm* file contained in the relevant folder of your data/ directory.
+
+
 
 
 
@@ -59,7 +69,7 @@ TODO
 
 Spaces can be evaluated on the standard relatedness and similarity test sets MEN and SimLex-999. To do so, go to *tests/MEN* or *tests/SimLex*. Evaluation can be performed on count spaces (with or without PPMI and PCA), on the output space of ext2vec, or on external vectors for comparison. For instance:
 
-    python spearman.py ext2vec --att --rel
+    python3 spearman.py ext2vec --att --rel
 
 It is possible to choose the space that is evaluated by using the flags *--att* and *--rel* (to include attribute and relations dimensions). Adding the flag *--ppmi* will run on the PPMI version of the predicate matrix, similarly with the *--pca* flag. So for example:
 
