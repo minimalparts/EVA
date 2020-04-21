@@ -10,6 +10,12 @@ Gather all the stats we'll need for building the matrices:
 
     cd utils; python3 stats.py
 
+We'll also compute and store standard similarity and nearest neighbours information on the created space. From the main directory, do:
+
+    python3 similarity.py
+
+All similarity files will be stored in the *data/* directory.
+
 
 ## Generate the semantic spaces
 
@@ -85,14 +91,6 @@ To run a comparison with FastText VG:
 
 
 
-
-## Generate standard similarity measures
-
-To obtain standard similarity and nearest neighbours information on the created space, do:
-
-    python3 similarity.py
-
-Warning: the pairwise cosine computation takes a little while. All similarity files will be stored in the *data/* directory.
 
 
 
