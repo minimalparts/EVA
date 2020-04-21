@@ -79,7 +79,9 @@ would run on a count space with relation dimensions, with PPMI weighting and PCA
 
 To run a comparison with FastText VG:
 
-    python3 spearman.py compare --file=../../spaces/fasttext/vg_description_corpus_2M.vecs.txt
+    python3 spearman.py compare --file=data/MEN_fasttext_vg_desc_vecs.txt
+
+(The data folder also contains the pretrained FastText and BERT vectors, issued from large corpora.)
 
 
 
