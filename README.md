@@ -48,6 +48,12 @@ For each entity, the predicates applicable to that entity are shown. E.g.
     2931124 man.n.01
     3132144 hand.n.01 of(-,guy.n.01)
 
+We'll also compute and store standard similarity and nearest neighbours information on the created space. Using the flags you picked for *extract.py*, run *similarity.py*. For instance:
+
+    python3 similarity.py --att --rel
+
+All similarity files will be stored in the *data/* directory.
+
 
 ## Run Ext2Vec
 
@@ -85,14 +91,6 @@ To run a comparison with FastText VG:
 
 
 
-
-## Generate standard similarity measures
-
-To obtain standard similarity and nearest neighbours information on the created space, do:
-
-    python3 similarity.py
-
-Warning: the pairwise cosine computation takes a little while. All similarity files will be stored in the *data/* directory.
 
 
 
