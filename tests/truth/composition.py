@@ -20,6 +20,7 @@ sys.path.append('../../utils/')
 from utils import read_entity_matrix, mk_entity_vectors, mk_full_predicate_vectors, read_inverse_entity_matrix
 import numpy as np
 import grammar
+from collections import Counter,OrderedDict
 
 basedir = "syn"
 
@@ -60,6 +61,7 @@ candidate_phrases = grammar.disambiguate(phrase,v.lexicon)	#Hack due to Visual G
 #for c in candidate_phrases:
 #    print(' '.join([w.surface+' '+w.pos for w in c]))
 
+
 for candidate in candidate_phrases:
     parse = grammar.parse_sentence(candidate)
     if parse == -1:
@@ -68,6 +70,7 @@ for candidate in candidate_phrases:
     lf,space_operations = grammar.get_space_operations(parse)
 
     print("\nPARSE FOUND. Reading entity matrix... Please be patient...")
+    predicates = []
     e_to_p = read_inverse_entity_matrix(basedir)
     p_to_e = read_entity_matrix(basedir)
     
@@ -91,4 +94,14 @@ for candidate in candidate_phrases:
         sys.exit(0)
     for e in current_attention:
         print(e, e_to_p[e])
-        
+        predicates.extend([p for p in e_to_p[e]])
+    counts = Counter(predicates)
+    num_instances = len(current_attention)
+    print("\nCOUNTS FOR THIS READING:")
+    for k,v in counts.items():
+        counts[k] = v/num_instances
+
+            
+    ordered_predicates = OrderedDict(sorted(counts.items(), key=lambda x: x[1], reverse=True))
+    for k,v in ordered_predicates.items():
+        print(k,v)

@@ -107,7 +107,23 @@ Run from the *truth* directory. To retrieve the extension of a particular consti
 
     python3 composition.py --att
 
-and input a phrase, e.g. *black teddy bear*.
+and input a phrase, e.g. *cute teddy bear*.
+
+The system will return a sorted list of predicates, indicating which proportion of instances of the phrase are associated with each one. For instance:
+
+    COUNTS FOR THIS READING:
+    bear.n 1.0
+    cute 1.0
+    brown 1.0
+    teddy 1.0
+    sitting 0.8
+    stuffed 0.8
+    nice 0.4
+    has(-,eye.n) 0.4
+    of(nose.n,-) 0.4
+    little 0.4
+    behind(curtain.n,-) 0.4
+    ...
 
 NB: the code involves a toy grammar linked to an interpretation function, and performs semantic space expansion / retraction as explained in the paper. For now, the grammar only implements bare NPs with adjectives and nouns (of any length). So in practice, you should run with the --att flag.
 
