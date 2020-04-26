@@ -94,7 +94,7 @@ To run a comparison with FastText VG:
 
 
 
-## Play with the spaces
+## Further evaluation
 
 The spaces can be inspected from the point of view of various aspects of semantic competence: a) the ability to refer; b) mastery of lexical relations; c) the ability to make graded semantic acceptability judgements with respect to 'normal use'. All code for this is to be found in the *tests* directory, under the relevant subfolder.
 
@@ -128,7 +128,14 @@ NB: the code involves a toy grammar linked to an interpretation function, and pe
 
 ### Lexical relations
 
-Run from the *lexrel* and *incompatibility* directories.
+Run from the *lexrel* and *compatibility* directories.
+
+We provide pretrained EVA models to reproduce the results reported in the paper. Models are contained in the *pretrained* directory and are available for the best scoring settings. As an example, to evaluate on the incompatibility dataset with EVA's ext2vec model, trained on the Visual Genome's relations, you might run:
+
+    python3 nn_compatibility_test.py --model=pretrained/eva/synrel/e106 --ext=../../spaces/synrel/ext2vec.dm 
+
+Note that in each pretrained directory, ten checkpoints are available, corresponding to the ten training runs averaged in the paper. The README in each directory provides the hyperparameters used for training.
+
 
 First, prepare the data in the relevant data/ directory by running *preprocess.py*. Then, to train, do for instance:
 

@@ -36,7 +36,7 @@ from sklearn.metrics import r2_score
 from sklearn.model_selection import KFold
 from scipy.spatial.distance import cosine
 
-device = torch.cuda.set_device(0)
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 #print(device)
 #random.seed(77)
 
@@ -48,7 +48,6 @@ class MLP(nn.Module):
         self.fc11 = nn.Linear(d1,hiddensize)
         self.fc2 = nn.Linear(2*hiddensize,hiddensize)
         self.fc3 = nn.Linear(hiddensize,d2)
-        #self.drop1 = nn.Dropout(p=0.5)
     def forward(self, x):
         x11 = torch.relu(self.fc11(x[0]))
         x12 = torch.relu(self.fc11(x[1]))
@@ -63,7 +62,6 @@ def make_input(data,vocab,pm):
     for i in range(len(data)):
         v1 = pm[vocab.index(data[i][0]+".n")]
         v2 = pm[vocab.index(data[i][1]+".n")]
-        #v = np.concatenate([v1,v2])
         cdm1[i] = v1
         cdm2[i] = v2
         outm[i] = np.array([float(data[i][2])])
@@ -85,58 +83,46 @@ def return_stats(data_scores):
 def test(ids_test,words1_test,words2_test,scores_test,model_file):
     print("FINAL TEST...............")
     net=torch.load(model_file)
-    net.cuda()
+    net.to(device)
     batch_size = 1
     test_predictions = []
     test_golds = []
     test_cosines = []
     for i in range(0,len(ids_test), batch_size):
-        prediction = net([Variable(torch.FloatTensor([words1_test[ids_test[i:i+batch_size]]])).cuda(), Variable(torch.FloatTensor([words2_test[ids_test[i:i+batch_size]]])).cuda()])
-        #predictions.append(prediction.data.numpy()[0])
+        prediction = net([Variable(torch.FloatTensor([words1_test[ids_test[i:i+batch_size]]])).to(device), Variable(torch.FloatTensor([words2_test[ids_test[i:i+batch_size]]])).to(device)])
         test_predictions.append(prediction.data.cpu().numpy()[0][0])
         test_golds.append(scores_test[ids_test[i]])
         test_cosines.append(1-cosine(words1_test[ids_test[i]],words2_test[ids_test[i]]))
-        print("PRED:",prediction.data.cpu().numpy()[0][0],"COS:",test_cosines[i],"GOLD:",test_golds[i])
+        #print("PRED:",prediction.data.cpu().numpy()[0][0],"COS:",test_cosines[i],"GOLD:",test_golds[i])
 
     test_pred_score = spearmanr(test_predictions,test_golds)[0]
     test_cos_score = spearmanr(test_cosines,test_golds)[0]
 
-    print("TEST PRED SCORE:",test_pred_score)
-    print("TEST COS SCORE:",test_cos_score)
+    print("TEST SCORE (SPEARMAN RHO):",test_pred_score)
+    print("COSINE BASELINE (SPEARMAN RHO):",test_cos_score)
     return(test_pred_score,test_cos_score)
 
 def prepare_data(external_vector_file,basedir):
     #print(external_vector_file)
     if external_vector_file != "":
         vocab, pm = read_external_vectors(external_vector_file)
-        vocab = [w+".n" for w in vocab]
-        #print(vocab)
+        #vocab = [w+".n" for w in vocab]
     else:
         #print("Reading probabilistic matrix... Please be patient...")
         #vocab, pm = read_probabilistic_matrix(basedir)
         vocab, pm = read_predicate_matrix(basedir,ppmi=True,pca=True)
 
     print("Reading dataset...")
-    cd_train = read_compatibility_data('data/in_vg_compatibility.train.txt')
-    cd_val = read_compatibility_data('data/in_vg_compatibility.val.txt')
     cd_test = read_compatibility_data('data/in_vg_compatibility.test.txt')
 
-    words1_train,words2_train,scores_train = make_input(cd_train,vocab,pm)
-    words1_val,words2_val,scores_val = make_input(cd_val,vocab,pm)
     words1_test,words2_test,scores_test = make_input(cd_test,vocab,pm)
 
-    print("# TRAIN STATS")
-    return_stats(scores_train)
-    print("# VAL STATS")
-    return_stats(scores_val)
     print("# TEST STATS")
     return_stats(scores_test)
 
-    ids_train = np.array([i for i in range(words1_train.shape[0])])
-    ids_val = np.array([i for i in range(words1_val.shape[0])])
     ids_test = np.array([i for i in range(words1_test.shape[0])])
 
-    return words1_train,words2_train,scores_train,words1_test,words2_test,scores_test,ids_train,ids_test
+    return words1_test,words2_test,scores_test,ids_test
 
 
 if __name__ == '__main__':
@@ -153,6 +139,6 @@ if __name__ == '__main__':
         external_vector_file = args["--ext"]
     model_file = args["--model"]
 
-    words1_train,words2_train,scores_train,words1_test,words2_test,scores_test,ids_train,ids_test = prepare_data(external_vector_file,basedir)
+    words1_test,words2_test,scores_test,ids_test = prepare_data(external_vector_file,basedir)
     test(ids_test,words1_test,words2_test,scores_test,model_file)
 
