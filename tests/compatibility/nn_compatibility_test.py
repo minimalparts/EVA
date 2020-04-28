@@ -82,8 +82,7 @@ def return_stats(data_scores):
 
 def test(ids_test,words1_test,words2_test,scores_test,model_file):
     print("FINAL TEST...............")
-
-    if device == 'gpu':
+    if torch.cuda.is_available():
         net=torch.load(model_file)
     else:
         print("Loading to CPU...")
