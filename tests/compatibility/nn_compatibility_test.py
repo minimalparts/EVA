@@ -37,7 +37,7 @@ from sklearn.model_selection import KFold
 from scipy.spatial.distance import cosine
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-#print(device)
+print("DEVICE:",device)
 #random.seed(77)
 
 
@@ -82,8 +82,13 @@ def return_stats(data_scores):
 
 def test(ids_test,words1_test,words2_test,scores_test,model_file):
     print("FINAL TEST...............")
-    net=torch.load(model_file)
-    net.to(device)
+
+    if device == 'gpu':
+        net=torch.load(model_file)
+    else:
+        print("Loading to CPU...")
+        net=torch.load(model_file,map_location='cpu')
+
     batch_size = 1
     test_predictions = []
     test_golds = []
