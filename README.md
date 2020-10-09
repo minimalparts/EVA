@@ -1,6 +1,4 @@
-# Ideal Words
-
-This repo computes truth-theoretic semantic spaces as described in the draft paper *'Ideal Words: a vector-based formalisation of semantic competence'* (Herbelot and Copestake, in prep).
+# EVA
 
 ## Installation
 
